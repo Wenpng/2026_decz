@@ -45,7 +45,7 @@
   .appbar__route{ margin-top:2px; font-size:13.5px; color:#8EA3C4; }
 
   .tabs{ display:flex; gap:0; background:var(--navy-2); padding:8px 10px; }
-  .tab{ flex:1; border:none; background:transparent; color:#C9D3E2; font-family:inherit; font-weight:700; font-size:16px; padding:12px 6px; border-radius:12px; display:flex; align-items:center; justify-content:center; gap:8px; min-height:48px; }
+  .tab{ flex:1; border:none; background:transparent; color:#C9D3E2; font-family:inherit; font-weight:700; font-size:14.5px; padding:12px 4px; border-radius:12px; display:flex; align-items:center; justify-content:center; gap:5px; min-height:48px; white-space:nowrap; }
   .tab.active{ background:var(--amber); color:var(--navy); }
 
   .datebar{ display:flex; gap:8px; overflow-x:auto; background:var(--navy-3); padding:10px 12px; -webkit-overflow-scrolling:touch; touch-action:pan-x; }
@@ -105,6 +105,7 @@
   .date-pin-wrap .num-pin{ position:relative; left:-50%; top:-11px; }
   .leaflet-popup-content{ font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif; font-size:14px; line-height:1.5; margin:12px 14px; }
   .popup-title{ font-weight:900; color:var(--navy); font-size:15.5px; margin-bottom:6px;}
+  .popup-en{ display:block; font-weight:600; font-size:12.5px; color:var(--ink-soft); margin-top:1px; letter-spacing:.2px; }
   .popup-entry{ margin-bottom:10px; }
   .popup-entry:last-child{ margin-bottom:0; }
   .popup-daylink{ display:block; width:100%; text-align:left; background:#F1F3F5; border:1px solid var(--line); border-radius:9px; padding:7px 11px; font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif; font-weight:700; font-size:13.5px; color:var(--navy); cursor:pointer; touch-action:manipulation; margin-top:5px; }
@@ -115,14 +116,37 @@
   .popup-gmap{ display:block; width:100%; box-sizing:border-box; text-align:left; background:#E8F0FE; border:1px solid #B9D3FB; border-radius:9px; padding:7px 11px; font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif; font-weight:700; font-size:13.5px; color:#1A56DB; text-decoration:none; margin-top:8px; touch-action:manipulation; }
   .popup-gmap:active{ background:#CFE0FD; }
 
-  .flightnote{ margin:14px 16px 0; background:var(--card); border:1px dashed var(--line); border-radius:14px; padding:14px 16px; font-size:14px; color:var(--ink-soft); }
-  .flightnote__title{ font-weight:900; color:var(--navy); font-size:15px; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
-  .flightleg{ padding:10px 0; }
-  .flightleg + .flightleg{ border-top:1px dashed var(--line); }
-  .flightleg__route{ font-weight:800; color:var(--navy-3); font-size:14.5px; margin-bottom:6px; }
-  .flightleg__row{ display:flex; justify-content:space-between; gap:12px; font-size:13.5px; padding:3px 0; }
-  .flightleg__row span:first-child{ color:var(--ink-soft); }
-  .flightleg__row span:last-child{ font-family:ui-monospace,'SF Mono','Menlo',monospace; font-weight:700; color:var(--ink); }
+  /* ---------- Flights page ---------- */
+  #flightView{ padding:16px 0 40px; }
+  .flightpage{ padding:0 16px; }
+  .flightcard{ background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px 16px 14px; margin-bottom:16px; box-shadow:0 2px 6px rgba(22,35,58,.08); }
+  .flightcard__tag{ display:inline-block; font-size:12.5px; font-weight:900; color:#fff; background:var(--navy-3); padding:3px 11px; border-radius:999px; margin-bottom:9px; }
+  .flightcard__tag.return{ background:var(--amber-deep); }
+  .flightcard__route{ font-size:20px; font-weight:900; color:var(--navy); line-height:1.35; }
+  .flightcard__route span{ color:var(--amber-deep); margin:0 4px; }
+  .flightcard__code{ font-size:14px; color:var(--ink-soft); font-weight:700; margin-top:3px; }
+
+  .flighttime{ display:flex; align-items:center; gap:8px; margin:14px 0 4px; padding:12px 0; border-top:1px dashed var(--line); border-bottom:1px dashed var(--line); }
+  .flighttime__col{ flex:1; min-width:0; }
+  .flighttime__col:last-child{ text-align:right; }
+  .flighttime__label{ font-size:12px; color:var(--ink-soft); font-weight:700; }
+  .flighttime__clock{ font-family:ui-monospace,'SF Mono','Menlo',monospace; font-size:24px; font-weight:700; color:var(--navy); line-height:1.2; }
+  .flighttime__clock .ampm{ font-size:12.5px; font-weight:700; color:var(--ink-soft); margin-right:5px; }
+  .flighttime__date{ font-size:13px; font-weight:700; color:var(--navy-3); }
+  .flighttime__place{ font-size:12.5px; color:var(--ink-soft); margin-top:3px; line-height:1.45; }
+  .flighttime__place .term{ display:block; }
+  .flighttime__mid{ flex:0 0 auto; text-align:center; color:var(--amber-deep); font-size:15px; font-weight:900; line-height:1.5; padding:0 4px; }
+  .flighttime__mid span{ display:block; font-size:11.5px; color:var(--ink-soft); font-weight:700; white-space:nowrap; }
+
+
+  .flightmap{ display:block; text-align:left; background:#E8F0FE; border:1px solid #B9D3FB; border-radius:10px; padding:10px 12px; font-weight:700; font-size:13.5px; color:#1A56DB; text-decoration:none; margin-top:8px; touch-action:manipulation; }
+  .flightmap:active{ background:#CFE0FD; }
+
+  .flighttip{ background:var(--card); border:1px dashed var(--line); border-radius:14px; padding:14px 16px; font-size:13.5px; color:var(--ink-soft); }
+  .flighttip b{ color:var(--navy); display:block; margin-bottom:6px; font-size:14.5px; }
+  .flighttip ul{ margin:0; padding-left:20px; }
+  .flighttip li{ margin:5px 0; line-height:1.6; }
+
 
   /* ---------- Day list view ---------- */
   .daycard{ background:var(--card); border-radius:16px; margin:0 16px 16px; padding:16px 18px; box-shadow:0 2px 6px rgba(22,35,58,.08); border:1px solid var(--line); }
@@ -163,6 +187,7 @@
   <div class="tabs">
     <button class="tab active" id="tabMapBtn" onclick="showView('map')">🗺️ 路線地圖</button>
     <button class="tab" id="tabListBtn" onclick="showView('list')">📋 每日行程</button>
+    <button class="tab" id="tabFlightBtn" onclick="showView('flight')">✈️ 航班</button>
   </div>
   <div class="datebar hidden" id="dateBar"></div>
 </div>
@@ -178,21 +203,74 @@
         <li>「在 Google 地圖看車站」可開啟該城市主要車站的 Google 地圖，方便查詢實際交通路線與班次。</li>
       </ol>
     </div>
-    <div class="flightnote">
-      <div class="flightnote__title">✈️ 國際航班（未畫在地圖上）</div>
-      <div class="flightleg">
-        <div class="flightleg__route">去程：台北 → 法蘭克福</div>
-        <div class="flightleg__row"><span>出發</span><span>8/29　10:50 PM</span></div>
-        <div class="flightleg__row"><span>抵達</span><span>8/30　6:50 AM</span></div>
-      </div>
-      <div class="flightleg">
-        <div class="flightleg__route">返程：布拉格 → 台北（高雄）</div>
-        <div class="flightleg__row"><span>出發</span><span>9/18　10:40 AM</span></div>
-        <div class="flightleg__row"><span>抵達</span><span>9/19　5:50 AM</span></div>
-      </div>
-    </div>
   </section>
   <section id="listView"></section>
+  <section id="flightView">
+    <div class="flightpage">
+
+      <div class="flightcard">
+        <div class="flightcard__tag">去程</div>
+        <div class="flightcard__route">台北桃園 <span>→</span> 法蘭克福</div>
+        <div class="flightcard__code">中華航空 CI 61</div>
+
+        <div class="flighttime">
+          <div class="flighttime__col">
+            <div class="flighttime__label">起飛</div>
+            <div class="flighttime__clock"><span class="ampm">PM</span>22:50</div>
+            <div class="flighttime__date">8/29（六）</div>
+            <div class="flighttime__place">桃園 TPE<span class="term">第 1 航廈</span></div>
+          </div>
+          <div class="flighttime__mid">✈<br><span>14 小時 00 分</span></div>
+          <div class="flighttime__col">
+            <div class="flighttime__label">抵達</div>
+            <div class="flighttime__clock"><span class="ampm">AM</span>06:50</div>
+            <div class="flighttime__date">8/30（日）</div>
+            <div class="flighttime__place">法蘭克福 FRA<span class="term">第 3 航廈</span></div>
+          </div>
+        </div>
+
+
+        <a class="flightmap" href="https://www.google.com/maps/search/?api=1&query=Taoyuan%20International%20Airport%20Terminal%201" target="_blank" rel="noopener">🗺️ 桃園機場 第 1 航廈 ›</a>
+        <a class="flightmap" href="https://www.google.com/maps/search/?api=1&query=Frankfurt%20Airport%20Terminal%203" target="_blank" rel="noopener">🗺️ 法蘭克福機場 第 3 航廈 ›</a>
+      </div>
+
+      <div class="flightcard">
+        <div class="flightcard__tag return">返程</div>
+        <div class="flightcard__route">布拉格 <span>→</span> 台北桃園</div>
+        <div class="flightcard__code">中華航空 CI 68</div>
+
+        <div class="flighttime">
+          <div class="flighttime__col">
+            <div class="flighttime__label">起飛</div>
+            <div class="flighttime__clock"><span class="ampm">AM</span>10:40</div>
+            <div class="flighttime__date">9/18（五）</div>
+            <div class="flighttime__place">布拉格 PRG<span class="term">第 1 航廈</span></div>
+          </div>
+          <div class="flighttime__mid">✈<br><span>12 小時 25 分</span></div>
+          <div class="flighttime__col">
+            <div class="flighttime__label">抵達</div>
+            <div class="flighttime__clock"><span class="ampm">AM</span>05:05</div>
+            <div class="flighttime__date">9/19（六）</div>
+            <div class="flighttime__place">桃園 TPE<span class="term">第 1 航廈</span></div>
+          </div>
+        </div>
+
+
+        <a class="flightmap" href="https://www.google.com/maps/search/?api=1&query=Prague%20Vaclav%20Havel%20Airport%20Terminal%201" target="_blank" rel="noopener">🗺️ 布拉格機場 第 1 航廈 ›</a>
+        <a class="flightmap" href="https://www.google.com/maps/search/?api=1&query=Taoyuan%20International%20Airport%20Terminal%201" target="_blank" rel="noopener">🗺️ 桃園機場 第 1 航廈 ›</a>
+      </div>
+
+      <div class="flighttip">
+        <b>提醒</b>
+        <ul>
+          <li>長途國際線建議起飛前 3 小時抵達機場報到。</li>
+          <li>布拉格回程當天，市區到機場約需 40 分鐘。</li>
+          <li>時間皆為當地時間，抵達日期跨到隔天。</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
 </main>
 
 <script>
@@ -386,6 +464,32 @@ function buildGraph(){
 
 // Google Maps search query for each city's main train station (used by the
 // "在 Google 地圖看車站" button in each popup).
+// Both the local-language name (what's on station boards and signage) and the
+// English name (easier for searching online). Only one is shown when identical.
+const cityNames = {
+  "法蘭克福":{local:"Frankfurt am Main", en:"Frankfurt", tag:"德"},
+  "科隆":{local:"Köln", en:"Cologne", tag:"德"},
+  "羅騰堡":{local:"Rothenburg ob der Tauber", en:"Rothenburg ob der Tauber", tag:"德"},
+  "呂德斯海姆":{local:"Rüdesheim am Rhein", en:"Rüdesheim am Rhein", tag:"德"},
+  "卡爾斯魯爾":{local:"Karlsruhe", en:"Karlsruhe", tag:"德"},
+  "海德堡":{local:"Heidelberg", en:"Heidelberg", tag:"德"},
+  "史特拉斯堡":{local:"Strasbourg", en:"Strasbourg", tag:"法"},
+  "科爾馬":{local:"Colmar", en:"Colmar", tag:"法"},
+  "慕尼黑":{local:"München", en:"Munich", tag:"德"},
+  "國王湖":{local:"Königssee", en:"Lake Königssee", tag:"德"},
+  "薩爾斯堡":{local:"Salzburg", en:"Salzburg", tag:"德"},
+  "柏林":{local:"Berlin", en:"Berlin", tag:"德"},
+  "波茨坦":{local:"Potsdam", en:"Potsdam", tag:"德"},
+  "布拉格":{local:"Praha", en:"Prague", tag:"捷"},
+};
+
+function cityNameHTML(city){
+  const n = cityNames[city];
+  if(!n) return '';
+  const txt = (n.local === n.en) ? n.local : `${n.local}（${n.tag}）／${n.en}（英）`;
+  return `<span class="popup-en">${txt}</span>`;
+}
+
 const stationQuery = {
   "法蘭克福":"Frankfurt Hauptbahnhof",
   "科隆":"Köln Hauptbahnhof",
@@ -413,6 +517,12 @@ function buildMap(){
   const {nodeOrder, connections} = buildGraph();
 
   leafletMap = L.map('leafletMap', { scrollWheelZoom:true });
+
+  // Own pane for the direction arrows, sitting above the route lines
+  // (overlayPane, 400) but below the date pins (markerPane, 600).
+  leafletMap.createPane('arrowPane');
+  leafletMap.getPane('arrowPane').style.zIndex = 550;
+  leafletMap.getPane('arrowPane').style.pointerEvents = 'none';
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom:18, attribution:'&copy; OpenStreetMap contributors'
   }).addTo(leafletMap);
@@ -445,7 +555,7 @@ function buildMap(){
       html:`<div class="route-arrow" style="transform:rotate(${ang}deg)"></div>`,
       iconSize:null
     });
-    L.marker(pos, { icon, interactive:false, keyboard:false }).addTo(arrowLayer);
+    L.marker(pos, { icon, pane:'arrowPane', interactive:false, keyboard:false }).addTo(arrowLayer);
   }
 
   // Merge legs that use the same city pair in both directions (e.g. Munich out
@@ -490,7 +600,7 @@ function buildMap(){
     const icon = L.divIcon({ className:'date-pin-wrap', html:`<div class="num-pin">${pinLabel}</div>`, iconSize:null });
     const marker = L.marker(coords, { icon }).addTo(leafletMap);
 
-    let popup = `<div class="popup-title">${city}</div>`;
+    let popup = `<div class="popup-title">${city}${cityNameHTML(city)}</div>`;
     entries.forEach(t=>{
       const anchor = `list-${slug(t.stay)}-${t.date.replace(/[\/–]/g,'')}`;
       const isRT = !!(t.isDaytrip || t.sameDayReturn);
@@ -516,7 +626,10 @@ function buildMap(){
 
   const allCoords = nodeOrder.map(c=>cityCoords[c]).filter(Boolean);
   const tripBounds = L.latLngBounds(allCoords);
-  leafletMap.fitBounds(tripBounds, { padding:[36,36] });
+  // Extra top/right room so the date labels on the outermost cities (Berlin at
+  // the top, Prague on the right) aren't clipped on narrow phone screens — the
+  // label sits above and either side of the marker point, not on it.
+  leafletMap.fitBounds(tripBounds, { paddingTopLeft:[42,46], paddingBottomRight:[46,34] });
 
   // Keep the map inside the trip area and stop it zooming out past the
   // fitted view. This caps how many distinct map tiles can ever be
@@ -533,7 +646,10 @@ function buildMap(){
   syncArrows();
 
   leafletMap.setMaxZoom(15);
-  leafletMap.setMaxBounds(tripBounds.pad(0.25));
+  // Derive the pan limit from the fitted VIEW, not the raw city bounds. Using the
+  // raw bounds could be tighter than what's on screen, so Leaflet would drag the
+  // view back inside and clip the outermost pins.
+  leafletMap.setMaxBounds(leafletMap.getBounds().pad(0.12));
   leafletMap.options.maxBoundsViscosity = 1.0;
 }
 
@@ -643,19 +759,28 @@ window.addEventListener('resize', ()=>{
   if(pagerEl) goToPage(activeIndex, false); // keep the same day aligned after rotate/resize
 });
 
+const VIEWS = { map:'mapView', list:'listView', flight:'flightView' };
+
 function showView(name){
-  const showEl = document.getElementById(name==='map' ? 'mapView' : 'listView');
-  const hideEl = document.getElementById(name==='map' ? 'listView' : 'mapView');
+  const targetId = VIEWS[name];
   document.getElementById('tabMapBtn').classList.toggle('active', name==='map');
   document.getElementById('tabListBtn').classList.toggle('active', name==='list');
+  document.getElementById('tabFlightBtn').classList.toggle('active', name==='flight');
   document.getElementById('dateBar').classList.toggle('hidden', name!=='list');
   window.scrollTo({top:0, behavior:'instant'});
 
-  hideEl.classList.remove('visible'); // start fade-out
+  // fade the other views out first
+  Object.values(VIEWS).forEach(id=>{
+    if(id!==targetId) document.getElementById(id).classList.remove('visible');
+  });
+
   setTimeout(()=>{
-    hideEl.classList.remove('active'); // now fully hidden
-    showEl.classList.add('active');    // laid out, still opacity 0
-    requestAnimationFrame(()=>{ showEl.classList.add('visible'); }); // fade-in
+    Object.values(VIEWS).forEach(id=>{
+      if(id!==targetId) document.getElementById(id).classList.remove('active');
+    });
+    const showEl = document.getElementById(targetId);
+    showEl.classList.add('active');
+    requestAnimationFrame(()=>{ showEl.classList.add('visible'); });
 
     setHeaderHeightVar();
     if(name==='map' && leafletMap){ setTimeout(()=>leafletMap.invalidateSize(), 80); }
