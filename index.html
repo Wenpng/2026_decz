@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0">
+<title>2026 德國捷克快樂行｜8/30–9/18</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+  :root{
+    --navy:#16233A;
+    --navy-2:#1F3155;
+    --navy-3:#2C4571;
+    --amber:#E8A33D;
+    --amber-deep:#C97F1B;
+    --paper:#EEF1EC;
+    --card:#FFFFFF;
+    --ink:#16233A;
+    --ink-soft:#4B5563;
+    --line:#DCE1E5;
+    --today-bg:#FFF4E0;
+    --today-ring:#E8A33D;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif;
+    font-size:17px;
+    line-height:1.65;
+    -webkit-tap-highlight-color:transparent;
+    padding-bottom:40px;
+  }
+  .mono{font-family:'Roboto Mono','Noto Sans TC',monospace;}
+
+  /* ---------- Sticky header stack ---------- */
+  .stickyhead{
+    position:sticky; top:0; z-index:40;
+    box-shadow:0 2px 10px rgba(0,0,0,.18);
+  }
+  .appbar{ background:var(--navy); color:#fff; padding:16px 20px 14px; }
+  .appbar__title{ font-weight:900; font-size:22px; letter-spacing:.5px; display:flex; align-items:center; gap:8px; }
+  .appbar__sub{ margin-top:4px; font-size:14.5px; color:#C9D3E2; font-weight:500; }
+  .appbar__route{ margin-top:2px; font-size:13.5px; color:#8EA3C4; }
+
+  .tabs{ display:flex; gap:0; background:var(--navy-2); padding:8px 10px; }
+  .tab{ flex:1; border:none; background:transparent; color:#C9D3E2; font-family:inherit; font-weight:700; font-size:16px; padding:12px 6px; border-radius:12px; display:flex; align-items:center; justify-content:center; gap:8px; min-height:48px; }
+  .tab.active{ background:var(--amber); color:var(--navy); }
+
+  .datebar{ display:flex; gap:8px; overflow-x:auto; background:var(--navy-3); padding:10px 12px; -webkit-overflow-scrolling:touch; touch-action:pan-x; }
+  .datebar::-webkit-scrollbar{display:none;}
+  .datebar.hidden{display:none;}
+  .datechip{ flex:0 0 auto; background:rgba(255,255,255,.12); border:1.5px solid rgba(255,255,255,.25); color:#fff; font-weight:700; font-size:14px; padding:8px 13px; border-radius:999px; white-space:nowrap; font-family:'Roboto Mono','Noto Sans TC',monospace; touch-action:manipulation; cursor:pointer; }
+  .datechip.active{ background:var(--amber); border-color:var(--amber-deep); color:var(--navy); }
+
+  main{max-width:640px; margin:0 auto; padding:4px 0 20px;}
+  section{display:none;}
+  section.active{display:block;}
+
+  /* ---------- Map view ---------- */
+  .mapwrap{ padding:16px 16px 4px; }
+  .mapcaption{ font-size:13.5px; color:var(--ink-soft); text-align:left; padding:10px 20px 2px; }
+  .mapcaption ol{ margin:0; padding-left:22px; }
+  .mapcaption li{ margin:6px 0; }
+  #leafletMap{ width:100%; height:62vh; min-height:420px; border-radius:16px; border:1px solid var(--line); box-shadow:0 2px 6px rgba(22,35,58,.1); }
+  .num-pin{ background:var(--amber); border:3px solid var(--amber-deep); color:var(--navy); font-weight:900; font-family:'Roboto Mono',monospace; font-size:13px; width:26px;height:26px; border-radius:50%; display:flex;align-items:center;justify-content:center; box-shadow:0 0 0 3px #fff; }
+  .leaflet-popup-content{ font-family:'Noto Sans TC',sans-serif; font-size:14px; line-height:1.5; margin:12px 14px; }
+  .popup-title{ font-weight:900; color:var(--navy); font-size:15.5px; margin-bottom:6px;}
+  .popup-entry{ margin-bottom:10px; }
+  .popup-entry:last-child{ margin-bottom:0; }
+  .popup-daylink{ display:block; width:100%; text-align:left; background:#F1F3F5; border:1px solid var(--line); border-radius:9px; padding:7px 11px; font-family:'Noto Sans TC',sans-serif; font-weight:700; font-size:13.5px; color:var(--navy); cursor:pointer; touch-action:manipulation; margin-top:5px; }
+  .popup-daylink:active{ background:var(--amber); border-color:var(--amber-deep); }
+  .popup-transport{ font-weight:800; font-size:13.5px; padding-left:2px; }
+  .popup-transport.oneway{ color:#1D4ED8; }
+  .popup-transport.roundtrip{ color:#DC2626; }
+  .popup-gmap{ display:block; width:100%; box-sizing:border-box; text-align:left; background:#E8F0FE; border:1px solid #B9D3FB; border-radius:9px; padding:7px 11px; font-family:'Noto Sans TC',sans-serif; font-weight:700; font-size:13.5px; color:#1A56DB; text-decoration:none; margin-top:8px; touch-action:manipulation; }
+  .popup-gmap:active{ background:#CFE0FD; }
+
+  .flightnote{ margin:14px 16px 0; background:var(--card); border:1px dashed var(--line); border-radius:14px; padding:14px 16px; font-size:14px; color:var(--ink-soft); }
+  .flightnote__title{ font-weight:900; color:var(--navy); font-size:15px; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+  .flightleg{ padding:10px 0; }
+  .flightleg + .flightleg{ border-top:1px dashed var(--line); }
+  .flightleg__route{ font-weight:800; color:var(--navy-3); font-size:14.5px; margin-bottom:6px; }
+  .flightleg__row{ display:flex; justify-content:space-between; gap:12px; font-size:13.5px; padding:3px 0; }
+  .flightleg__row span:first-child{ color:var(--ink-soft); }
+  .flightleg__row span:last-child{ font-family:'Roboto Mono',monospace; font-weight:700; color:var(--ink); }
+
+  /* ---------- Day list view ---------- */
+  .daycard{ background:var(--card); border-radius:16px; margin:0 16px 16px; padding:16px 18px; box-shadow:0 2px 6px rgba(22,35,58,.08); border:1px solid var(--line); scroll-margin-top:calc(var(--header-h, 196px) + 14px); }
+  .daycard.is-today{ background:var(--today-bg); box-shadow:0 0 0 3px var(--today-ring), 0 2px 6px rgba(22,35,58,.1); }
+  .daycard.is-base{border-left:5px solid var(--amber);}
+  .daycard__top{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px; }
+  .daycard__date{ display:flex; align-items:baseline; gap:8px; }
+  .daycard__date .d{ font-family:'Roboto Mono',monospace; font-weight:700; font-size:20px; color:var(--navy); }
+  .daycard__date .w{ font-size:13.5px; font-weight:700; color:#fff; background:var(--navy-3); padding:3px 9px; border-radius:8px; }
+  .today-tag{ font-size:12px; font-weight:900; color:#fff; background:var(--amber-deep); padding:4px 10px; border-radius:999px; letter-spacing:1px; }
+  .daycard__title{ font-size:19px; font-weight:900; color:var(--navy); margin-bottom:8px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .badge-daytrip{ display:inline-block; font-size:12px; font-weight:700; color:var(--amber-deep); background:#FCEFD9; padding:2px 9px; border-radius:999px; }
+  .daycard ul.highlights{ list-style:none; margin:0 0 10px; padding:0; }
+  .daycard ul.highlights li{ position:relative; padding-left:20px; margin-bottom:6px; color:#2A3442; }
+  .daycard ul.highlights li::before{ content:"•"; position:absolute; left:2px; color:var(--amber-deep); font-weight:900; }
+  .daycard__row{ display:flex; align-items:flex-start; gap:8px; font-size:14.5px; color:var(--ink-soft); margin-top:8px; padding-top:8px; border-top:1px dashed var(--line); }
+  .daycard__row .icon{flex:0 0 auto; font-size:16px;}
+  .daycard__row.stay{color:var(--navy-3); font-weight:700;}
+
+  .leghead{ margin:26px 16px 10px; font-size:15px; font-weight:900; color:var(--navy-2); display:flex; align-items:center; gap:8px; }
+  .leghead::after{ content:""; flex:1; height:2px; background:var(--line); }
+
+  .footnote{ text-align:center; color:#8892A0; font-size:12.5px; padding:20px 30px 4px; }
+
+  @media (max-width:360px){ body{font-size:16px;} .appbar__title{font-size:19px;} }
+</style>
+</head>
+<body>
+
+<div class="stickyhead">
+  <div class="appbar">
+    <div class="appbar__title">🇩🇪🇨🇿 2026 德國捷克快樂行</div>
+    <div class="appbar__sub">2026 / 8 / 30 — 9 / 18　共 20 天</div>
+    <div class="appbar__route">法蘭克福 → 卡爾斯魯爾 → 慕尼黑 → 柏林 → 布拉格</div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" id="tabMapBtn" onclick="showView('map')">🗺️ 路線地圖</button>
+    <button class="tab" id="tabListBtn" onclick="showView('list')">📋 每日行程</button>
+  </div>
+  <div class="datebar hidden" id="dateBar"></div>
+</div>
+
+<main>
+  <section id="mapView" class="active">
+    <div class="mapwrap"><div id="leafletMap"></div></div>
+    <div class="mapcaption">
+      <ol>
+        <li>圖上數字＝依行程安排順序。</li>
+        <li>城市圖標可看交通方式與時間（藍色＝單程／紅色＝來回），並可跳至當日行程。</li>
+        <li>「在 Google 地圖看車站」可開啟該城市主要車站的 Google 地圖，方便查詢實際交通路線與班次。</li>
+      </ol>
+    </div>
+    <div class="flightnote">
+      <div class="flightnote__title">✈️ 國際航班（未畫在地圖上）</div>
+      <div class="flightleg">
+        <div class="flightleg__route">去程：台北 → 法蘭克福</div>
+        <div class="flightleg__row"><span>出發</span><span>8/29　10:50 PM</span></div>
+        <div class="flightleg__row"><span>抵達</span><span>8/30　6:50 AM</span></div>
+      </div>
+      <div class="flightleg">
+        <div class="flightleg__route">返程：布拉格 → 台北（高雄）</div>
+        <div class="flightleg__row"><span>出發</span><span>9/18　10:40 AM</span></div>
+        <div class="flightleg__row"><span>抵達</span><span>9/19　5:50 AM</span></div>
+      </div>
+    </div>
+  </section>
+  <section id="listView"></section>
+</main>
+
+<script>
+const trip = [
+  {date:"8/30", weekday:"日", title:"法蘭克福抵達", flags:["🇩🇪"],
+   highlights:["羅馬廣場","法蘭克福主教座堂","歌德之家","施泰德美術館"],
+   transport:"✈️ 台北 → 法蘭克福", note:"8/29 22:50 起飛 → 8/30 6:50 抵達（家人航班）",
+   stay:"法蘭克福", isBase:true, mapCity:"法蘭克福"},
+
+  {date:"8/31", weekday:"一", title:"科隆", flags:["🇩🇪"], isDaytrip:true,
+   highlights:["科隆大教堂","霍亨索倫橋","科隆三角大樓","萊茵河","巧克力博物館","香水博物館"],
+   transport:"🚄 ICE 約1小時", note:null, stay:"法蘭克福", isBase:false, mapCity:"科隆"},
+
+  {date:"9/1", weekday:"三", title:"羅騰堡＋烏茲堡", flags:["🇩🇪"], isDaytrip:true,
+   highlights:["羅騰堡老城城牆","羅騰堡雪球 Schneeball","時間充裕可續訪烏茲堡宮殿、馬利恩堡要塞"],
+   transport:"🚆 區域車 約2小時", note:"德鐵月票啟用", stay:"法蘭克福", isBase:false, mapCity:"羅騰堡"},
+
+  {date:"9/2", weekday:"二", title:"呂德斯海姆", flags:["🇩🇪"], isDaytrip:true,
+   highlights:["葡萄酒小鎮","纜車","呂德斯海姆咖啡 Rüdesheimer Kaffee","萊茵河遊船"],
+   transport:"🚆 區域車 約1小時", note:null, stay:"法蘭克福", isBase:false, mapCity:"呂德斯海姆"},
+
+  {date:"9/3", weekday:"四", title:"法蘭克福 → 卡爾斯魯爾", flags:["🇩🇪"],
+   highlights:["卡爾斯魯爾市區"],
+   transport:"🚄 ICE 約1小時", note:"家人移動到卡魯，與工作坊會合",
+   stay:"卡爾斯魯爾", isBase:true, mapCity:"卡爾斯魯爾"},
+
+  {date:"9/4", weekday:"五", title:"海德堡", flags:["🇩🇪"], isDaytrip:true,
+   highlights:["海德堡城堡","老橋","老城區"],
+   transport:"🚆 區域車 約40分鐘", note:null, stay:"卡爾斯魯爾", isBase:false, mapCity:"海德堡"},
+
+  {date:"9/5", weekday:"六", title:"史特拉斯堡", flags:["🇫🇷"], isDaytrip:true,
+   highlights:["史特拉斯堡大教堂","Petite France","運河"],
+   transport:"🚆 跨國 ICE 約45分鐘", note:"月票跨國後需另購票", stay:"卡爾斯魯爾", isBase:false, mapCity:"史特拉斯堡"},
+
+  {date:"9/6", weekday:"日", title:"科爾馬", flags:["🇫🇷"], isDaytrip:true,
+   highlights:["小威尼斯","老城漫步"],
+   transport:"🚆 跨國 ICE＋區域車 約1小時40分", note:"月票跨國後需另購票", stay:"卡爾斯魯爾", isBase:false, mapCity:"科爾馬"},
+
+  {date:"9/7", weekday:"一", title:"卡爾斯魯爾 → 慕尼黑", flags:["🇩🇪"],
+   highlights:["瑪利亞廣場","HB 啤酒屋晚餐","慕尼黑王宮","英國花園","維克圖阿連市場"],
+   transport:"🚄 ICE 約3小時", note:"早上出發前往慕尼黑",
+   stay:"慕尼黑", isBase:true, mapCity:"慕尼黑"},
+
+  {date:"9/8", weekday:"二", title:"慕尼黑 → 國王湖", flags:["🇩🇪"], isDaytrip:true,
+   highlights:["電動船","聖巴托羅繆教堂吃魚","上湖","Jenner 纜車（視時間決定）"],
+   transport:"🚆 區域車 約3小時", note:"當晚改住薩爾斯堡",
+   stay:"薩爾斯堡", isBase:true, mapCity:"國王湖"},
+
+  {date:"9/9", weekday:"三", title:"薩爾斯堡 → 慕尼黑", flags:["🇩🇪"], isDaytrip:true,
+   highlights:["薩爾斯堡要塞","薩爾斯堡主教座堂","莫札特故居","米拉貝爾宮與花園"],
+   transport:"🚆 區域車 約1小時40分", note:"薩爾斯堡一日遊，晚上返回慕尼黑",
+   stay:"慕尼黑", isBase:true, mapCity:"薩爾斯堡"},
+
+  {date:"9/10", weekday:"四", title:"慕尼黑 → 柏林", flags:["🇩🇪"],
+   highlights:["可續遊慕尼黑，或提早前往柏林"],
+   transport:"🚄 ICE 約4小時", note:"早上或下午出發前往柏林",
+   stay:"柏林", isBase:true, mapCity:"柏林"},
+
+  {date:"9/11", weekday:"五", title:"柏林", flags:["🇩🇪"],
+   highlights:["布蘭登堡門","國會大廈","猶太紀念碑","Checkpoint Charlie","圍牆紀念館","幽靈車站"],
+   transport:null, note:null, stay:"柏林", isBase:false, mapCity:"柏林"},
+
+  {date:"9/12", weekday:"六", title:"波茨坦", flags:["🇩🇪"], isDaytrip:true,
+   highlights:["無憂宮花園","新宮","中國茶館"],
+   transport:"🚆 S-Bahn 約30分鐘", note:null, stay:"柏林", isBase:false, mapCity:"波茨坦"},
+
+  {date:"9/13", weekday:"日", title:"柏林", flags:["🇩🇪"],
+   highlights:["柏林愛樂 管風琴＋豎琴音樂會 11:00","博物館島","East Side Gallery"],
+   transport:null, note:null, stay:"柏林", isBase:false, mapCity:"柏林"},
+
+  {date:"9/14", weekday:"一", title:"柏林 → 布拉格", flags:["🇩🇪","🇨🇿"],
+   highlights:["Berliner Unterwelten 地下世界","恐怖地形圖"],
+   transport:"🚆 跨國 約4小時", note:"下午或晚上出發前往布拉格",
+   stay:"布拉格", isBase:true, mapCity:"布拉格"},
+
+  {date:"9/15", weekday:"二", title:"布拉格", flags:["🇨🇿"],
+   highlights:["布拉格城堡","聖維特大教堂","黃金巷"],
+   transport:null, note:"德鐵月票不適用，改用克朗現金／當地票", stay:"布拉格", isBase:false, mapCity:"布拉格"},
+
+  {date:"9/16", weekday:"三", title:"布拉格", flags:["🇨🇿"],
+   highlights:["舊城廣場天文鐘","查理大橋","小城區","佩特任山夕陽"],
+   transport:null, note:null, stay:"布拉格", isBase:false, mapCity:"布拉格"},
+
+  {date:"9/17", weekday:"四", title:"布拉格", flags:["🇨🇿"],
+   highlights:["自由活動","卡夫卡博物館","維謝赫拉德城堡","購物"],
+   transport:null, note:"晚上整理行李", stay:"布拉格", isBase:false, mapCity:"布拉格"},
+
+  {date:"9/18", weekday:"五", title:"布拉格 → 台灣", flags:["🇨🇿"],
+   highlights:[],
+   transport:"✈️ 布拉格直飛台北", note:"市區到機場約40分鐘；9/18 10:40 起飛 → 9/19 5:50 抵達",
+   stay:"高雄（到家）", isBase:true, mapCity:null},
+];
+
+const cityCoords = {
+  "卡爾斯魯爾":[49.0069, 8.4037],
+  "法蘭克福":[50.1109, 8.6821],
+  "科隆":[50.9375, 6.9603],
+  "羅騰堡":[49.3761, 10.1866],
+  "呂德斯海姆":[49.9783, 7.9256],
+  "海德堡":[49.3988, 8.6724],
+  "史特拉斯堡":[48.5734, 7.7521],
+  "科爾馬":[48.0794, 7.3585],
+  "慕尼黑":[48.1351, 11.5820],
+  "國王湖":[47.5908, 12.9878],
+  "薩爾斯堡":[47.8095, 13.0550],
+  "柏林":[52.5200, 13.4050],
+  "波茨坦":[52.3906, 13.0645],
+  "布拉格":[50.0755, 14.4378],
+};
+
+// ---------- helpers ----------
+function slug(s){ return s.replace(/[^\w一-龥]/g,"_"); }
+function parseAllDates(dstr){
+  const nums = dstr.match(/\d+\/\d+/g) || [];
+  return nums.map(s=>{ const [mo,da] = s.split("/").map(Number); return mo*100+da; });
+}
+const today = new Date();
+const todayKey = (today.getMonth()+1)*100 + today.getDate();
+function isTodayEntry(entry){
+  const parts = parseAllDates(entry.date);
+  if(parts.length===0) return false;
+  if(parts.length===1) return parts[0]===todayKey;
+  return todayKey>=parts[0] && todayKey<=parts[1];
+}
+
+/* ----------------------------------------------------------------
+   Build a correct travel graph from the day-by-day data:
+   - a base-move day (isBase, mapCity === stay) draws ONE line from
+     the previous location to the new base.
+   - a day-trip (mapCity !== stay, stay === currentPosition) draws a
+     single round-trip line between the current base and that town
+     (never chained straight to the next day-trip town).
+   - the Königssee→Salzburg case (visit a town, then change base) is
+     handled as two consecutive one-way hops.
+------------------------------------------------------------------- */
+function buildGraph(){
+  const nodeOrder = [];
+  const nodeSeen = new Set();
+  const connections = [];
+  let currentPosition = null;
+
+  function ensureNode(city){
+    if(!nodeSeen.has(city)){ nodeSeen.add(city); nodeOrder.push(city); }
+  }
+
+  trip.forEach(t=>{
+    if(!t.mapCity) return;
+    const mapCity = t.mapCity, stay = t.stay;
+
+    if(currentPosition===null){
+      ensureNode(mapCity);
+      currentPosition = stay;
+      return;
+    }
+    if(mapCity === currentPosition){
+      if(stay !== currentPosition){
+        ensureNode(stay);
+        connections.push({from:currentPosition, to:stay, label:t.transport});
+        currentPosition = stay;
+      }
+      return;
+    }
+    ensureNode(mapCity);
+    if(stay === mapCity){
+      connections.push({from:currentPosition, to:mapCity, label:t.transport});
+      currentPosition = mapCity;
+    } else if(stay === currentPosition){
+      connections.push({from:currentPosition, to:mapCity, label:t.transport, roundtrip:true});
+    } else {
+      ensureNode(stay);
+      connections.push({from:currentPosition, to:mapCity, label:t.transport});
+      connections.push({from:mapCity, to:stay, label:null});
+      currentPosition = stay;
+    }
+  });
+
+  return {nodeOrder, connections};
+}
+
+// Google Maps search query for each city's main train station (used by the
+// "在 Google 地圖看車站" button in each popup).
+const stationQuery = {
+  "法蘭克福":"Frankfurt Hauptbahnhof",
+  "科隆":"Köln Hauptbahnhof",
+  "羅騰堡":"Rothenburg ob der Tauber Bahnhof",
+  "呂德斯海姆":"Rüdesheim (Rhein) Bahnhof",
+  "卡爾斯魯爾":"Karlsruhe Hauptbahnhof",
+  "海德堡":"Heidelberg Hauptbahnhof",
+  "史特拉斯堡":"Gare de Strasbourg",
+  "科爾馬":"Gare de Colmar",
+  "慕尼黑":"München Hauptbahnhof",
+  "國王湖":"Berchtesgaden Hauptbahnhof",
+  "薩爾斯堡":"Salzburg Hauptbahnhof",
+  "柏林":"Berlin Hauptbahnhof",
+  "波茨坦":"Potsdam Hauptbahnhof",
+  "布拉格":"Praha hlavní nádraží",
+};
+function googleMapsUrl(query){
+  return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query);
+}
+
+// ---------- build MAP view (Leaflet) ----------
+let leafletMap;
+function buildMap(){
+  const {nodeOrder, connections} = buildGraph();
+
+  leafletMap = L.map('leafletMap', { scrollWheelZoom:true });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom:18, attribution:'&copy; OpenStreetMap contributors'
+  }).addTo(leafletMap);
+
+  // the Leaflet popup's built-in "×" close button is an <a href="#">, which on
+  // some browsers jumps the whole page to the top when tapped. Neutralise that.
+  leafletMap.on('popupopen', e=>{
+    const btn = e.popup && e.popup._closeButton;
+    if(btn) btn.setAttribute('href', 'javascript:void(0)');
+  });
+
+  connections.forEach(c=>{
+    const a = cityCoords[c.from], b = cityCoords[c.to];
+    if(!a || !b) return;
+    L.polyline([a,b], { color:'#2C4571', weight:4, opacity:.85, dashArray: c.roundtrip ? '2,9' : '1,0', interactive:false }).addTo(leafletMap);
+  });
+
+  nodeOrder.forEach((city,i)=>{
+    const coords = cityCoords[city];
+    if(!coords) return;
+    const icon = L.divIcon({ className:'', html:`<div class="num-pin">${i+1}</div>`, iconSize:[26,26], iconAnchor:[13,13] });
+    const marker = L.marker(coords, { icon }).addTo(leafletMap);
+
+    const entries = trip.filter(t=>t.mapCity===city);
+    let popup = `<div class="popup-title">${i+1}. ${city}</div>`;
+    entries.forEach(t=>{
+      const anchor = `list-${slug(t.stay)}-${t.date.replace(/[\/–]/g,'')}`;
+      const cls = t.isDaytrip ? 'roundtrip' : 'oneway';
+      popup += `<div class="popup-entry">`;
+      if(t.transport){
+        popup += `<div class="popup-transport ${cls}">${t.transport}${t.isDaytrip?'（來回）':''}</div>`;
+      }
+      popup += `<button type="button" class="popup-daylink" onclick="goToDayFromMap('${anchor}')">📅 ${t.date}　${t.title} ›</button>`;
+      popup += `</div>`;
+    });
+    const q = stationQuery[city];
+    if(q){
+      popup += `<a class="popup-gmap" href="${googleMapsUrl(q)}" target="_blank" rel="noopener">🗺️ 在 Google 地圖看車站 ›</a>`;
+    }
+    marker.bindPopup(popup, { maxWidth:260 });
+  });
+
+  const allCoords = nodeOrder.map(c=>cityCoords[c]).filter(Boolean);
+  leafletMap.fitBounds(L.latLngBounds(allCoords), { padding:[36,36] });
+}
+
+// ---------- build LIST view ----------
+function buildDateBar(){
+  const el = document.getElementById('dateBar');
+  let html = '';
+  trip.forEach(t=>{
+    const anchor = `list-${slug(t.stay)}-${t.date.replace(/[\/–]/g,'')}`;
+    html += `<button type="button" class="datechip" id="chip-${anchor}" data-target="${anchor}">${t.date}</button>`;
+  });
+  el.innerHTML = html;
+  el.querySelectorAll('.datechip').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      suppressSpy = true;
+      document.querySelectorAll('.datechip').forEach(c=>c.classList.remove('active'));
+      btn.classList.add('active');
+      setHeaderHeightVar();
+      jumpTo(btn.dataset.target);
+      clearTimeout(suppressTimer);
+      suppressTimer = setTimeout(()=>{ suppressSpy = false; }, 800);
+    });
+  });
+}
+
+function buildList(){
+  const el = document.getElementById('listView');
+  let html = '';
+  let lastStay = null;
+  trip.forEach((t)=>{
+    if(t.isBase && t.stay !== lastStay){
+      html += `<div class="leghead">📍 ${t.stay}</div>`;
+      lastStay = t.stay;
+    }
+    const anchor = `list-${slug(t.stay)}-${t.date.replace(/[\/–]/g,'')}`;
+    const todayFlag = isTodayEntry(t);
+    html += `<div class="daycard ${t.isBase?'is-base':''} ${todayFlag?'is-today':''}" id="${anchor}">
+      <div class="daycard__top">
+        <div class="daycard__date"><span class="d mono">${t.date}</span><span class="w">週${t.weekday}</span></div>
+        ${todayFlag?'<span class="today-tag">今天</span>':''}
+      </div>
+      <div class="daycard__title">${t.flags.join('')} ${t.title}${t.isDaytrip?'<span class="badge-daytrip">一日遊</span>':''}</div>`;
+    if(t.highlights && t.highlights.length){
+      html += `<ul class="highlights">` + t.highlights.map(h=>`<li>${h}</li>`).join('') + `</ul>`;
+    }
+    if(t.transport){ html += `<div class="daycard__row"><span>${t.transport}</span></div>`; }
+    if(t.note){ html += `<div class="daycard__row"><span class="icon">📝</span><span>${t.note}</span></div>`; }
+    html += `<div class="daycard__row stay"><span class="icon">🏨</span><span>住宿：${t.stay}</span></div>`;
+    html += `</div>`;
+  });
+  el.innerHTML = html;
+}
+
+function jumpTo(id){
+  const node = document.getElementById(id);
+  if(node) node.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function goToDayFromMap(anchor){
+  if(leafletMap) leafletMap.closePopup();
+  suppressSpy = true;
+  showView('list');
+  setTimeout(()=>{
+    jumpTo(anchor);
+    document.querySelectorAll('.datechip').forEach(c=>c.classList.remove('active'));
+    const chip = document.getElementById('chip-'+anchor);
+    if(chip) chip.classList.add('active');
+    clearTimeout(suppressTimer);
+    suppressTimer = setTimeout(()=>{ suppressSpy = false; }, 800);
+  }, 150);
+}
+
+function setHeaderHeightVar(){
+  const h = document.querySelector('.stickyhead').offsetHeight;
+  document.documentElement.style.setProperty('--header-h', h+'px');
+}
+window.addEventListener('resize', setHeaderHeightVar);
+
+function showView(name){
+  document.getElementById('mapView').classList.toggle('active', name==='map');
+  document.getElementById('listView').classList.toggle('active', name==='list');
+  document.getElementById('tabMapBtn').classList.toggle('active', name==='map');
+  document.getElementById('tabListBtn').classList.toggle('active', name==='list');
+  document.getElementById('dateBar').classList.toggle('hidden', name!=='list');
+  setHeaderHeightVar();
+  if(name==='map' && leafletMap){ setTimeout(()=>leafletMap.invalidateSize(), 80); }
+  if(name==='list'){ setTimeout(updateActiveChip, 50); }
+  window.scrollTo({top:0, behavior:'instant'});
+}
+
+/* ----------------------------------------------------------------
+   Scrollspy: highlight the date chip for whichever day-card's top
+   has just passed under the sticky header. Uses plain scroll math
+   (not IntersectionObserver) so it reliably tracks the *current*
+   card instead of skipping ahead to the next one.
+------------------------------------------------------------------- */
+let cardsCache = [];
+let suppressSpy = false;
+let suppressTimer = null;
+function updateActiveChip(){
+  if(suppressSpy) return;
+  if(!cardsCache.length) cardsCache = Array.from(document.querySelectorAll('.daycard'));
+  if(!cardsCache.length) return;
+  const headerBottom = document.querySelector('.stickyhead').getBoundingClientRect().bottom;
+  let active = cardsCache[0];
+  for(const c of cardsCache){
+    if(c.getBoundingClientRect().top <= headerBottom + 2){ active = c; } else { break; }
+  }
+  document.querySelectorAll('.datechip').forEach(chip=>chip.classList.remove('active'));
+  const chip = document.getElementById('chip-'+active.id);
+  if(chip){
+    chip.classList.add('active');
+    chip.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+  }
+}
+let scrollTicking = false;
+window.addEventListener('scroll', ()=>{
+  if(!scrollTicking){
+    window.requestAnimationFrame(()=>{ updateActiveChip(); scrollTicking = false; });
+    scrollTicking = true;
+  }
+}, { passive:true });
+
+buildDateBar();
+buildList();
+buildMap();
+setHeaderHeightVar();
+updateActiveChip();
+if(document.fonts && document.fonts.ready){ document.fonts.ready.then(setHeaderHeightVar); }
+
+const todayEntry = trip.find(isTodayEntry);
+if(todayEntry){
+  setTimeout(()=>{
+    showView('list');
+    const anchor = `list-${slug(todayEntry.stay)}-${todayEntry.date.replace(/[\/–]/g,'')}`;
+    jumpTo(anchor);
+    setTimeout(updateActiveChip, 400);
+  }, 200);
+}
+</script>
+</body>
+</html>
