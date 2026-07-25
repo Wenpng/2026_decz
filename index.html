@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0">
-<title>2026 德國捷克快樂行｜8/30–9/18</title>
+<title>2026 德國捷克行｜8/30–9/18</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
@@ -98,7 +98,7 @@
   .mapcaption ol{ margin:0; padding-left:22px; }
   .mapcaption li{ margin:6px 0; }
   #leafletMap{ width:100%; height:62vh; min-height:420px; border-radius:16px; border:1px solid var(--line); box-shadow:0 2px 6px rgba(22,35,58,.1); }
-  .num-pin{ background:var(--amber); border:3px solid var(--amber-deep); color:var(--navy); font-weight:900; font-family:ui-monospace,'SF Mono','Menlo',monospace; font-size:13px; width:26px;height:26px; border-radius:50%; display:flex;align-items:center;justify-content:center; box-shadow:0 0 0 3px #fff; }
+  .num-pin{ background:var(--amber); border:2.5px solid var(--amber-deep); color:var(--navy); font-weight:900; font-family:ui-monospace,'SF Mono','Menlo',monospace; font-size:12.5px; line-height:1; padding:5px 8px; border-radius:999px; white-space:nowrap; display:inline-flex; align-items:center; justify-content:center; box-shadow:0 0 0 2.5px #fff, 0 1px 3px rgba(0,0,0,.25); }
   .leaflet-popup-content{ font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif; font-size:14px; line-height:1.5; margin:12px 14px; }
   .popup-title{ font-weight:900; color:var(--navy); font-size:15.5px; margin-bottom:6px;}
   .popup-entry{ margin-bottom:10px; }
@@ -168,7 +168,7 @@
     <div class="mapwrap"><div id="leafletMap"></div></div>
     <div class="mapcaption">
       <ol>
-        <li>圖上數字＝依行程安排順序。</li>
+        <li>圖上標示＝抵達該城市的日期（停留多天者標第一天）。</li>
         <li>城市圖標可看交通方式與時間（藍色＝單程／紅色＝來回），並可跳至當日行程。</li>
         <li>「在 Google 地圖看車站」可開啟該城市主要車站的 Google 地圖，方便查詢實際交通路線與班次。</li>
       </ol>
@@ -212,7 +212,7 @@ const trip = [
   {date:"9/3", weekday:"四", title:"法蘭克福 → 卡爾斯魯爾", flags:["🇩🇪"],
    highlights:["卡爾斯魯爾市區"],
    transport:"🚄 ICE 約1小時", note:"家人移動到卡魯，與工作坊會合",
-   stay:"卡爾斯魯爾", isBase:true, mapCity:"卡爾斯魯爾"},
+   stay:"卡爾斯魯爾", isBase:true, mapCity:"卡爾斯魯爾", alsoAt:"法蘭克福"},
 
   {date:"9/4", weekday:"五", title:"海德堡", flags:["🇩🇪"], isDaytrip:true,
    highlights:["海德堡城堡","老橋","老城區"],
@@ -229,7 +229,7 @@ const trip = [
   {date:"9/7", weekday:"一", title:"卡爾斯魯爾 → 慕尼黑", flags:["🇩🇪"],
    highlights:["瑪利亞廣場","HB 啤酒屋晚餐","慕尼黑王宮","英國花園","維克圖阿連市場"],
    transport:"🚄 ICE 約3小時", note:"早上出發前往慕尼黑",
-   stay:"慕尼黑", isBase:true, mapCity:"慕尼黑"},
+   stay:"慕尼黑", isBase:true, mapCity:"慕尼黑", alsoAt:"卡爾斯魯爾"},
 
   {date:"9/8", weekday:"二", title:"慕尼黑 → 國王湖", flags:["🇩🇪"], isDaytrip:true,
    highlights:["電動船","聖巴托羅繆教堂吃魚","上湖","Jenner 纜車（視時間決定）"],
@@ -244,7 +244,7 @@ const trip = [
   {date:"9/10", weekday:"四", title:"慕尼黑 → 柏林", flags:["🇩🇪"],
    highlights:["可續遊慕尼黑，或提早前往柏林"],
    transport:"🚄 ICE 約4小時", note:"早上或下午出發前往柏林",
-   stay:"柏林", isBase:true, mapCity:"柏林"},
+   stay:"柏林", isBase:true, mapCity:"柏林", alsoAt:"慕尼黑"},
 
   {date:"9/11", weekday:"五", title:"柏林", flags:["🇩🇪"],
    highlights:["布蘭登堡門","國會大廈","猶太紀念碑","Checkpoint Charlie","圍牆紀念館","幽靈車站"],
@@ -261,7 +261,7 @@ const trip = [
   {date:"9/14", weekday:"一", title:"柏林 → 布拉格", flags:["🇩🇪","🇨🇿"],
    highlights:["Berliner Unterwelten 地下世界","恐怖地形圖"],
    transport:"🚆 跨國 約4小時", note:"下午或晚上出發前往布拉格",
-   stay:"布拉格", isBase:true, mapCity:"布拉格"},
+   stay:"布拉格", isBase:true, mapCity:"布拉格", alsoAt:"柏林"},
 
   {date:"9/15", weekday:"二", title:"布拉格", flags:["🇨🇿"],
    highlights:["布拉格城堡","聖維特大教堂","黃金巷"],
@@ -415,11 +415,14 @@ function buildMap(){
   nodeOrder.forEach((city,i)=>{
     const coords = cityCoords[city];
     if(!coords) return;
-    const icon = L.divIcon({ className:'', html:`<div class="num-pin">${i+1}</div>`, iconSize:[26,26], iconAnchor:[13,13] });
+
+    const entries = trip.filter(t=>t.mapCity===city || t.alsoAt===city);
+    const pinLabel = entries.length ? entries[0].date : (i+1);
+
+    const icon = L.divIcon({ className:'', html:`<div class="num-pin">${pinLabel}</div>`, iconSize:null, iconAnchor:[20,11] });
     const marker = L.marker(coords, { icon }).addTo(leafletMap);
 
-    const entries = trip.filter(t=>t.mapCity===city);
-    let popup = `<div class="popup-title">${i+1}. ${city}</div>`;
+    let popup = `<div class="popup-title">${city}</div>`;
     entries.forEach(t=>{
       const anchor = `list-${slug(t.stay)}-${t.date.replace(/[\/–]/g,'')}`;
       const cls = t.isDaytrip ? 'roundtrip' : 'oneway';
