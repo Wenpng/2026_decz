@@ -23,7 +23,6 @@
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
-  html{ scroll-snap-type:y proximity; }
   body{
     background:var(--paper);
     color:var(--ink);
@@ -31,7 +30,7 @@
     font-size:17px;
     line-height:1.65;
     -webkit-tap-highlight-color:transparent;
-    padding-bottom:40px;
+    padding-bottom:0;
   }
   .mono{font-family:ui-monospace,'SF Mono','Menlo','Noto Sans TC',monospace;}
 
@@ -57,11 +56,41 @@
   .datechip.sun{ color:#FCA5A5; border-color:#DC2626; }
   .datechip.active{ background:var(--amber); border-color:var(--amber-deep); color:var(--navy); }
 
-  main{max-width:640px; margin:0 auto; padding:4px 0 20px;}
+  main{max-width:640px; margin:0 auto;}
   section{ display:none; opacity:0; transition:opacity .18s ease; }
-  #listView{ padding-bottom:55vh; }
   section.active{ display:block; }
   section.active.visible{ opacity:1; }
+  #mapView{ padding:4px 0 30px; }
+
+  /* ---------- Day pager (one day per swipeable page) ---------- */
+  #listView.active{
+    display:flex; flex-direction:column;
+    height:calc(100vh - var(--header-h, 196px));
+    height:calc(100dvh - var(--header-h, 196px));
+  }
+  .pager{
+    flex:1; display:flex;
+    overflow-x:auto; overflow-y:hidden;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .pager::-webkit-scrollbar{ display:none; }
+  .daypage{
+    flex:0 0 100%; width:100%;
+    scroll-snap-align:start;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    padding:14px 0 18px;
+    opacity:.4;
+    transition:opacity .3s ease;
+  }
+  .daypage.active{ opacity:1; }
+  .swipehint{
+    flex:0 0 auto; text-align:center;
+    font-size:12.5px; color:#8892A0;
+    padding:8px 16px 12px; letter-spacing:1px;
+  }
 
   /* ---------- Map view ---------- */
   .mapwrap{ padding:16px 16px 4px; }
@@ -92,9 +121,7 @@
   .flightleg__row span:last-child{ font-family:ui-monospace,'SF Mono','Menlo',monospace; font-weight:700; color:var(--ink); }
 
   /* ---------- Day list view ---------- */
-  .daycard{ background:var(--card); border-radius:16px; margin:0 16px 16px; padding:16px 18px; box-shadow:0 2px 6px rgba(22,35,58,.08); border:1px solid var(--line); scroll-margin-top:calc(var(--header-h, 196px) + 8px); scroll-snap-align:start; scroll-snap-stop:normal; }
-  .anim-ready .daycard{ opacity:0; transform:translateY(10px); transition:opacity .45s ease, transform .45s ease; }
-  .anim-ready .daycard.in-view{ opacity:1; transform:translateY(0); }
+  .daycard{ background:var(--card); border-radius:16px; margin:0 16px 16px; padding:16px 18px; box-shadow:0 2px 6px rgba(22,35,58,.08); border:1px solid var(--line); }
   .daycard.is-today{ background:var(--today-bg); box-shadow:0 0 0 3px var(--today-ring), 0 2px 6px rgba(22,35,58,.1); }
   .daycard.is-base{border-left:5px solid var(--amber);}
   .daycard__top{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px; }
@@ -423,85 +450,110 @@ function buildMap(){
   leafletMap.options.maxBoundsViscosity = 1.0;
 }
 
-// ---------- build LIST view ----------
+// ---------- build LIST view (one day per swipeable page) ----------
+const dayAnchors = trip.map(t=>`list-${slug(t.stay)}-${t.date.replace(/[\/\u2013]/g,'')}`);
+let pagerEl = null;
+let activeIndex = 0;
+
+function wkndClass(w){ return w==='\u516d' ? 'sat' : (w==='\u65e5' ? 'sun' : ''); }
+
 function buildDateBar(){
   const el = document.getElementById('dateBar');
   let html = '';
-  trip.forEach(t=>{
-    const anchor = `list-${slug(t.stay)}-${t.date.replace(/[\/–]/g,'')}`;
-    const wkndCls = t.weekday==='六' ? 'sat' : (t.weekday==='日' ? 'sun' : '');
-    html += `<button type="button" class="datechip ${wkndCls}" id="chip-${anchor}" data-target="${anchor}">${t.date}</button>`;
+  trip.forEach((t,i)=>{
+    html += `<button type="button" class="datechip ${wkndClass(t.weekday)}" id="chip-${dayAnchors[i]}" data-index="${i}">${t.date}</button>`;
   });
   el.innerHTML = html;
   el.querySelectorAll('.datechip').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      suppressSpy = true;
-      document.querySelectorAll('.datechip').forEach(c=>c.classList.remove('active'));
-      btn.classList.add('active');
-      lastActiveId = btn.dataset.target;
-      setHeaderHeightVar();
-      jumpTo(btn.dataset.target);
-      clearTimeout(suppressTimer);
-      suppressTimer = setTimeout(()=>{ suppressSpy = false; }, 800);
-    });
+    btn.addEventListener('click', ()=>goToPage(parseInt(btn.dataset.index,10), true));
   });
 }
 
 function buildList(){
   const el = document.getElementById('listView');
-  let html = '';
-  let lastStay = null;
-  trip.forEach((t)=>{
-    if(t.isBase && t.stay !== lastStay){
-      html += `<div class="leghead">📍 ${t.stay}</div>`;
-      lastStay = t.stay;
-    }
-    const anchor = `list-${slug(t.stay)}-${t.date.replace(/[\/–]/g,'')}`;
+  let html = '<div class="pager" id="pager">';
+  trip.forEach((t,i)=>{
     const todayFlag = isTodayEntry(t);
-    html += `<div class="daycard ${t.isBase?'is-base':''} ${todayFlag?'is-today':''}" id="${anchor}">
-      <div class="daycard__top">
-        <div class="daycard__date"><span class="d mono">${t.date}</span><span class="w ${t.weekday==='六'?'sat':t.weekday==='日'?'sun':''}">週${t.weekday}</span></div>
-        ${todayFlag?'<span class="today-tag">今天</span>':''}
-      </div>
-      <div class="daycard__title">${t.flags.join('')} ${t.title}${t.isDaytrip?'<span class="badge-daytrip">一日遊</span>':''}</div>`;
+    html += `<div class="daypage" id="page-${i}">
+      <div class="daycard ${t.isBase?'is-base':''} ${todayFlag?'is-today':''}" id="${dayAnchors[i]}">
+        <div class="daycard__top">
+          <div class="daycard__date"><span class="d mono">${t.date}</span><span class="w ${wkndClass(t.weekday)}">\u9031${t.weekday}</span></div>
+          ${todayFlag?'<span class="today-tag">\u4eca\u5929</span>':''}
+        </div>
+        <div class="daycard__title">${t.flags.join('')} ${t.title}${t.isDaytrip?'<span class="badge-daytrip">\u4e00\u65e5\u904a</span>':''}</div>`;
     if(t.highlights && t.highlights.length){
       html += `<ul class="highlights">` + t.highlights.map(h=>`<li>${h}</li>`).join('') + `</ul>`;
     }
     if(t.transport){ html += `<div class="daycard__row"><span>${t.transport}</span></div>`; }
-    if(t.note){ html += `<div class="daycard__row"><span class="icon">📝</span><span>${t.note}</span></div>`; }
-    html += `<div class="daycard__row stay"><span class="icon">🏨</span><span>住宿：${t.stay}</span></div>`;
-    html += `</div>`;
+    if(t.note){ html += `<div class="daycard__row"><span class="icon">\ud83d\udcdd</span><span>${t.note}</span></div>`; }
+    html += `<div class="daycard__row stay"><span class="icon">\ud83c\udfe8</span><span>\u4f4f\u5bbf\uff1a${t.stay}</span></div>`;
+    html += `</div></div>`;
   });
+  html += '</div><div class="swipehint">\u2190 \u5de6\u53f3\u6ed1\u52d5\u5207\u63db\u65e5\u671f \u2192</div>';
   el.innerHTML = html;
+
+  pagerEl = document.getElementById('pager');
+  pagerEl.addEventListener('scroll', onPagerScroll, { passive:true });
 }
 
-function jumpTo(id){
-  const node = document.getElementById(id);
-  if(node) node.scrollIntoView({behavior:'smooth', block:'start'});
+/* The pager is a native horizontal scroller with mandatory snap, so the
+   browser guarantees it settles exactly on one page. Which day is active
+   is then simply scrollLeft / pageWidth — an exact answer that can't drift,
+   and is identical whether you swiped left, swiped right, or tapped a chip.
+   This is what removes the old "off by one day" problem entirely. */
+let pagerTicking = false;
+function onPagerScroll(){
+  if(pagerTicking) return;
+  pagerTicking = true;
+  requestAnimationFrame(()=>{
+    const w = pagerEl.clientWidth || 1;
+    setActiveIndex(Math.round(pagerEl.scrollLeft / w));
+    pagerTicking = false;
+  });
+}
+
+function setActiveIndex(i){
+  i = Math.max(0, Math.min(trip.length-1, i));
+  if(i===activeIndex && document.querySelector('.datechip.active')) return;
+  activeIndex = i;
+
+  const prevChip = document.querySelector('.datechip.active');
+  if(prevChip) prevChip.classList.remove('active');
+  const chip = document.getElementById('chip-'+dayAnchors[i]);
+  if(chip){
+    chip.classList.add('active');
+    chip.scrollIntoView({behavior:'auto', inline:'center', block:'nearest'});
+  }
+
+  const prevPage = document.querySelector('.daypage.active');
+  if(prevPage) prevPage.classList.remove('active');
+  const page = document.getElementById('page-'+i);
+  if(page) page.classList.add('active');
+}
+
+function goToPage(i, smooth){
+  if(!pagerEl) return;
+  i = Math.max(0, Math.min(trip.length-1, i));
+  const w = pagerEl.clientWidth || 1;
+  pagerEl.scrollTo({ left: i*w, behavior: smooth ? 'smooth' : 'auto' });
+  setActiveIndex(i);
 }
 
 function goToDayFromMap(anchor){
   if(leafletMap) leafletMap.closePopup();
-  suppressSpy = true;
+  const idx = dayAnchors.indexOf(anchor);
   showView('list');
-  setTimeout(()=>{
-    jumpTo(anchor);
-    document.querySelectorAll('.datechip').forEach(c=>c.classList.remove('active'));
-    const chip = document.getElementById('chip-'+anchor);
-    if(chip) chip.classList.add('active');
-    lastActiveId = anchor;
-    clearTimeout(suppressTimer);
-    suppressTimer = setTimeout(()=>{ suppressSpy = false; }, 800);
-  }, 230); // wait out showView's own 180ms crossfade before scrolling
+  setTimeout(()=>{ goToPage(idx<0?0:idx, false); }, 230);
 }
 
-let cachedHeaderH = 0;
 function setHeaderHeightVar(){
   const h = document.querySelector('.stickyhead').offsetHeight;
   document.documentElement.style.setProperty('--header-h', h+'px');
-  cachedHeaderH = h;
 }
-window.addEventListener('resize', setHeaderHeightVar);
+window.addEventListener('resize', ()=>{
+  setHeaderHeightVar();
+  if(pagerEl) goToPage(activeIndex, false); // keep the same day aligned after rotate/resize
+});
 
 function showView(name){
   const showEl = document.getElementById(name==='map' ? 'mapView' : 'listView');
@@ -514,115 +566,31 @@ function showView(name){
   hideEl.classList.remove('visible'); // start fade-out
   setTimeout(()=>{
     hideEl.classList.remove('active'); // now fully hidden
-    showEl.classList.add('active');    // display:block, still opacity 0
+    showEl.classList.add('active');    // laid out, still opacity 0
     requestAnimationFrame(()=>{ showEl.classList.add('visible'); }); // fade-in
 
     setHeaderHeightVar();
     if(name==='map' && leafletMap){ setTimeout(()=>leafletMap.invalidateSize(), 80); }
-    if(name==='list'){ setTimeout(updateActiveChip, 50); }
+    if(name==='list'){ setTimeout(()=>goToPage(activeIndex, false), 40); }
   }, 180);
 }
-
-/* ----------------------------------------------------------------
-   Scrollspy: highlight the date chip for whichever day-card's top
-   has just passed under the sticky header.
-
-   Deliberately simple: on each animation frame during scrolling, read
-   every card's REAL on-screen position (getBoundingClientRect — not a
-   cached value) and pick the last one whose top has crossed the header
-   line. No caching, no assumptions about snap offsets, so it can't go
-   stale or drift depending on scroll direction/speed — it always
-   reflects exactly what's on screen at that moment.
-------------------------------------------------------------------- */
-let suppressSpy = false;
-let suppressTimer = null;
-let lastActiveId = null;
-
-function setActiveChip(id){
-  if(!id || id === lastActiveId) return;
-  lastActiveId = id;
-  const prev = document.querySelector('.datechip.active');
-  if(prev) prev.classList.remove('active');
-  const chip = document.getElementById('chip-'+id);
-  if(chip){
-    chip.classList.add('active');
-    chip.scrollIntoView({behavior:'auto', inline:'center', block:'nearest'});
-  }
-}
-
-function updateActiveChip(){
-  if(suppressSpy) return;
-  const cards = document.querySelectorAll('.daycard');
-  if(!cards.length) return;
-
-  const atBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 4);
-  if(atBottom){ setActiveChip(cards[cards.length-1].id); return; }
-  if(window.scrollY <= 4){ setActiveChip(cards[0].id); return; }
-
-  // Pick whichever card occupies the most screen area below the sticky header.
-  // A single "focus line" near the top was inherently asymmetric: scrolling up,
-  // the next card's top sits *below* that line long after it visually dominates
-  // the screen, so the previous day stayed highlighted. Area is symmetric —
-  // it gives the same answer regardless of scroll direction.
-  const headerBottom = document.querySelector('.stickyhead').getBoundingClientRect().bottom;
-  const viewBottom = window.innerHeight;
-
-  let active = cards[0], bestArea = -1;
-  for(const c of cards){
-    const r = c.getBoundingClientRect();
-    if(r.bottom < headerBottom || r.top > viewBottom) continue; // off screen
-    const visible = Math.min(r.bottom, viewBottom) - Math.max(r.top, headerBottom);
-    if(visible > bestArea){ bestArea = visible; active = c; }
-  }
-  setActiveChip(active.id);
-}
-
-let scrollTicking = false;
-window.addEventListener('scroll', ()=>{
-  if(!scrollTicking){
-    window.requestAnimationFrame(()=>{ updateActiveChip(); scrollTicking = false; });
-    scrollTicking = true;
-  }
-}, { passive:true });
 
 buildDateBar();
 buildList();
 buildMap();
 setHeaderHeightVar();
-updateActiveChip();
+setActiveIndex(0);
 if(document.fonts && document.fonts.ready){ document.fonts.ready.then(setHeaderHeightVar); }
 
-// map tab is shown by default on load — make it visible immediately (no fade needed the first time)
+// map tab is shown by default on load
 document.getElementById('mapView').classList.add('visible');
-
-// scroll-reveal fade-in for day cards. Gated behind .anim-ready so the cards
-// stay visible-by-default if this script fails for any reason. Each card is
-// unobserved right after it fades in once — cheap, and avoids re-triggering
-// the animation every time you scroll past the same card again.
-document.documentElement.classList.add('anim-ready');
-if('IntersectionObserver' in window){
-  const revealObserver = new IntersectionObserver((entries)=>{
-    entries.forEach(entry=>{
-      if(entry.isIntersecting){
-        entry.target.classList.add('in-view');
-        revealObserver.unobserve(entry.target);
-      }
-    });
-  }, { rootMargin:'0px 0px -8% 0px', threshold:0.05 });
-  document.querySelectorAll('.daycard').forEach(card=>revealObserver.observe(card));
-} else {
-  document.querySelectorAll('.daycard').forEach(card=>card.classList.add('in-view'));
-}
 
 const todayEntry = trip.find(isTodayEntry);
 if(todayEntry){
+  const idx = trip.indexOf(todayEntry);
   setTimeout(()=>{
     showView('list');
-    const anchor = `list-${slug(todayEntry.stay)}-${todayEntry.date.replace(/[\/–]/g,'')}`;
-    setTimeout(()=>{
-      jumpTo(anchor);
-      setActiveChip(anchor);
-    }, 220); // wait out showView's own 180ms crossfade before scrolling
+    setTimeout(()=>goToPage(idx, false), 230);
   }, 200);
 }
 </script>
