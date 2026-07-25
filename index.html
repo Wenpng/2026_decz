@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0">
-<title>2026 德國捷克行｜8/30–9/18</title>
+<title>2026 德國捷克快樂行｜8/30–9/18</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
@@ -98,7 +98,11 @@
   .mapcaption ol{ margin:0; padding-left:22px; }
   .mapcaption li{ margin:6px 0; }
   #leafletMap{ width:100%; height:62vh; min-height:420px; border-radius:16px; border:1px solid var(--line); box-shadow:0 2px 6px rgba(22,35,58,.1); }
-  .num-pin{ background:var(--amber); border:2.5px solid var(--amber-deep); color:var(--navy); font-weight:900; font-family:ui-monospace,'SF Mono','Menlo',monospace; font-size:12.5px; line-height:1; padding:5px 8px; border-radius:999px; white-space:nowrap; display:inline-flex; align-items:center; justify-content:center; box-shadow:0 0 0 2.5px #fff, 0 1px 3px rgba(0,0,0,.25); }
+  .num-pin{ background:var(--amber); border:2.5px solid var(--amber-deep); color:var(--navy); font-weight:900; font-family:ui-monospace,'SF Mono','Menlo',monospace; font-size:12.5px; line-height:1; padding:5px 8px; border-radius:999px; white-space:nowrap; width:max-content; display:inline-flex; align-items:center; justify-content:center; box-shadow:0 0 0 2.5px #fff, 0 1px 3px rgba(0,0,0,.25); }
+  .arrow-wrap{ width:auto !important; height:auto !important; background:none; border:none; }
+  .route-arrow{ width:0; height:0; border-left:10px solid #2C4571; border-top:6.5px solid transparent; border-bottom:6.5px solid transparent; position:relative; left:-5px; top:-6.5px; filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 1px #fff); }
+  .date-pin-wrap{ width:auto !important; height:auto !important; background:none; border:none; }
+  .date-pin-wrap .num-pin{ position:relative; left:-50%; top:-11px; }
   .leaflet-popup-content{ font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif; font-size:14px; line-height:1.5; margin:12px 14px; }
   .popup-title{ font-weight:900; color:var(--navy); font-size:15.5px; margin-bottom:6px;}
   .popup-entry{ margin-bottom:10px; }
@@ -169,7 +173,8 @@
     <div class="mapcaption">
       <ol>
         <li>圖上標示＝抵達該城市的日期（停留多天者標第一天）。</li>
-        <li>城市圖標可看交通方式與時間（藍色＝單程／紅色＝來回），並可跳至當日行程。</li>
+        <li>城市圖標可看交通方式與時間（藍色＝單程／紅色＝當天來回），並可跳至當日行程。</li>
+        <li>虛線＝原路往返；地圖放大後會顯示行進方向的箭頭。</li>
         <li>「在 Google 地圖看車站」可開啟該城市主要車站的 Google 地圖，方便查詢實際交通路線與班次。</li>
       </ol>
     </div>
@@ -231,14 +236,17 @@ const trip = [
    transport:"🚄 ICE 約3小時", note:"早上出發前往慕尼黑",
    stay:"慕尼黑", isBase:true, mapCity:"慕尼黑", alsoAt:"卡爾斯魯爾"},
 
-  {date:"9/8", weekday:"二", title:"慕尼黑 → 國王湖", flags:["🇩🇪"], isDaytrip:true,
+  {date:"9/8", weekday:"二", title:"慕尼黑 → 薩爾斯堡 → 國王湖", flags:["🇩🇪","🇦🇹"],
    highlights:["電動船","聖巴托羅繆教堂吃魚","上湖","Jenner 纜車（視時間決定）"],
-   transport:"🚆 區域車 約3小時", note:"當晚改住薩爾斯堡",
-   stay:"薩爾斯堡", isBase:true, mapCity:"國王湖"},
+   viaCity:"薩爾斯堡", viaDashed:true,
+   viaTransport:"🚄 火車 約1小時30分（慕尼黑→薩爾斯堡）",
+   transport:"🚌 巴士 840＋841 約1小時（薩爾斯堡→國王湖）",
+   note:"巴士 840 從薩爾斯堡火車站發車到貝希特斯加登（約50分），再轉 841 到國王湖（約10–15分）。可向司機購買一日票（約 €11，只收現金，含來回與區內轉乘）。德鐵月票不適用。當晚住薩爾斯堡。",
+   stay:"薩爾斯堡", isBase:true, mapCity:"國王湖", alsoAt:"薩爾斯堡", sameDayReturn:true},
 
-  {date:"9/9", weekday:"三", title:"薩爾斯堡 → 慕尼黑", flags:["🇩🇪"], isDaytrip:true,
+  {date:"9/9", weekday:"三", title:"薩爾斯堡 → 慕尼黑", flags:["🇦🇹","🇩🇪"],
    highlights:["薩爾斯堡要塞","薩爾斯堡主教座堂","莫札特故居","米拉貝爾宮與花園"],
-   transport:"🚆 區域車 約1小時40分", note:"薩爾斯堡一日遊，晚上返回慕尼黑",
+   transport:"🚄 火車 約1小時30分", note:"上午逛薩爾斯堡，傍晚搭車返回慕尼黑", dashedLeg:true,
    stay:"慕尼黑", isBase:true, mapCity:"薩爾斯堡"},
 
   {date:"9/10", weekday:"四", title:"慕尼黑 → 柏林", flags:["🇩🇪"],
@@ -345,9 +353,18 @@ function buildGraph(){
     if(mapCity === currentPosition){
       if(stay !== currentPosition){
         ensureNode(stay);
-        connections.push({from:currentPosition, to:stay, label:t.transport});
+        connections.push({from:currentPosition, to:stay, label:t.transport, dashed:!!t.dashedLeg});
         currentPosition = stay;
       }
+      return;
+    }
+    // a stopover: travel to viaCity first, then out-and-back to mapCity the same day
+    if(t.viaCity && t.viaCity !== currentPosition){
+      ensureNode(t.viaCity);
+      connections.push({from:currentPosition, to:t.viaCity, label:t.viaTransport, dashed:!!t.viaDashed});
+      currentPosition = t.viaCity;
+      ensureNode(mapCity);
+      connections.push({from:t.viaCity, to:mapCity, label:t.transport, roundtrip:true});
       return;
     }
     ensureNode(mapCity);
@@ -391,6 +408,7 @@ function googleMapsUrl(query){
 
 // ---------- build MAP view (Leaflet) ----------
 let leafletMap;
+let arrowLayer = null;
 function buildMap(){
   const {nodeOrder, connections} = buildGraph();
 
@@ -406,10 +424,60 @@ function buildMap(){
     if(btn) btn.setAttribute('href', 'javascript:void(0)');
   });
 
+  // Arrows live in their own layer so they can be hidden when zoomed out,
+  // where they would otherwise pile up on top of each other and on the date pins.
+  arrowLayer = L.layerGroup();
+
+  // Both the position and the angle are computed in PROJECTED coordinates and
+  // then converted back. Interpolating in raw lat/lng puts the arrow off the
+  // drawn line on long north-south legs, because the map projection stretches
+  // latitude non-linearly.
+  function addArrow(a, b, frac, flip){
+    const Z = 10;
+    const p1 = leafletMap.project(L.latLng(a), Z);
+    const p2 = leafletMap.project(L.latLng(b), Z);
+    let ang = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI;
+    if(flip) ang += 180;
+    const mid = L.point(p1.x + (p2.x-p1.x)*frac, p1.y + (p2.y-p1.y)*frac);
+    const pos = leafletMap.unproject(mid, Z);
+    const icon = L.divIcon({
+      className:'arrow-wrap',
+      html:`<div class="route-arrow" style="transform:rotate(${ang}deg)"></div>`,
+      iconSize:null
+    });
+    L.marker(pos, { icon, interactive:false, keyboard:false }).addTo(arrowLayer);
+  }
+
+  // Merge legs that use the same city pair in both directions (e.g. Munich out
+  // on 9/8 and back on 9/9). Drawing them as two separate polylines stacked one
+  // on top of the other made the dashes look doubled and put two arrows almost
+  // on the same spot. One line + one arrow each way reads much more clearly.
+  const legs = new Map();
   connections.forEach(c=>{
-    const a = cityCoords[c.from], b = cityCoords[c.to];
-    if(!a || !b) return;
-    L.polyline([a,b], { color:'#2C4571', weight:4, opacity:.85, dashArray: c.roundtrip ? '2,9' : '1,0', interactive:false }).addTo(leafletMap);
+    if(!cityCoords[c.from] || !cityCoords[c.to]) return;
+    const key = [c.from, c.to].slice().sort().join('|');
+    const existing = legs.get(key);
+    if(existing){
+      existing.twoWay = true;
+      existing.dashed = true;
+    } else {
+      legs.set(key, {
+        from: c.from, to: c.to,
+        dashed: !!(c.roundtrip || c.dashed),
+        twoWay: !!c.roundtrip
+      });
+    }
+  });
+
+  legs.forEach(leg=>{
+    const a = cityCoords[leg.from], b = cityCoords[leg.to];
+    L.polyline([a,b], { color:'#2C4571', weight:4, opacity:.85, dashArray: leg.dashed ? '2,9' : '1,0', interactive:false }).addTo(leafletMap);
+    if(leg.twoWay){
+      addArrow(a, b, 0.30, false);  // outbound
+      addArrow(a, b, 0.70, true);   // return
+    } else {
+      addArrow(a, b, 0.55, false);
+    }
   });
 
   nodeOrder.forEach((city,i)=>{
@@ -419,16 +487,22 @@ function buildMap(){
     const entries = trip.filter(t=>t.mapCity===city || t.alsoAt===city);
     const pinLabel = entries.length ? entries[0].date : (i+1);
 
-    const icon = L.divIcon({ className:'', html:`<div class="num-pin">${pinLabel}</div>`, iconSize:null, iconAnchor:[20,11] });
+    const icon = L.divIcon({ className:'date-pin-wrap', html:`<div class="num-pin">${pinLabel}</div>`, iconSize:null });
     const marker = L.marker(coords, { icon }).addTo(leafletMap);
 
     let popup = `<div class="popup-title">${city}</div>`;
     entries.forEach(t=>{
       const anchor = `list-${slug(t.stay)}-${t.date.replace(/[\/–]/g,'')}`;
-      const cls = t.isDaytrip ? 'roundtrip' : 'oneway';
+      const isRT = !!(t.isDaytrip || t.sameDayReturn);
+      const cls = isRT ? 'roundtrip' : 'oneway';
       popup += `<div class="popup-entry">`;
-      if(t.transport){
-        popup += `<div class="popup-transport ${cls}">${t.transport}${t.isDaytrip?'（來回）':''}</div>`;
+      // At a stopover city, only the leg getting there is relevant. At the final
+      // destination, show the whole chain so it's clear how to get there overall.
+      if(t.viaCity === city){
+        if(t.viaTransport) popup += `<div class="popup-transport oneway">${t.viaTransport}</div>`;
+      } else {
+        if(t.viaTransport) popup += `<div class="popup-transport oneway">${t.viaTransport}</div>`;
+        if(t.transport) popup += `<div class="popup-transport ${cls}">${t.transport}${isRT?'（當天來回）':''}</div>`;
       }
       popup += `<button type="button" class="popup-daylink" onclick="goToDayFromMap('${anchor}')">📅 ${t.date}　${t.title} ›</button>`;
       popup += `</div>`;
@@ -437,7 +511,7 @@ function buildMap(){
     if(q){
       popup += `<a class="popup-gmap" href="${googleMapsUrl(q)}" target="_blank" rel="noopener">🗺️ 在 Google 地圖看車站 ›</a>`;
     }
-    marker.bindPopup(popup, { maxWidth:260 });
+    marker.bindPopup(popup, { maxWidth:320, minWidth:250 });
   });
 
   const allCoords = nodeOrder.map(c=>cityCoords[c]).filter(Boolean);
@@ -447,7 +521,17 @@ function buildMap(){
   // Keep the map inside the trip area and stop it zooming out past the
   // fitted view. This caps how many distinct map tiles can ever be
   // requested — zooming in is still allowed for street-level detail.
-  leafletMap.setMinZoom(leafletMap.getZoom());
+  const baseZoom = leafletMap.getZoom();
+  leafletMap.setMinZoom(baseZoom);
+
+  function syncArrows(){
+    const show = leafletMap.getZoom() > baseZoom;
+    if(show && !leafletMap.hasLayer(arrowLayer)) arrowLayer.addTo(leafletMap);
+    if(!show && leafletMap.hasLayer(arrowLayer)) leafletMap.removeLayer(arrowLayer);
+  }
+  leafletMap.on('zoomend', syncArrows);
+  syncArrows();
+
   leafletMap.setMaxZoom(15);
   leafletMap.setMaxBounds(tripBounds.pad(0.25));
   leafletMap.options.maxBoundsViscosity = 1.0;
@@ -487,6 +571,7 @@ function buildList(){
     if(t.highlights && t.highlights.length){
       html += `<ul class="highlights">` + t.highlights.map(h=>`<li>${h}</li>`).join('') + `</ul>`;
     }
+    if(t.viaTransport){ html += `<div class="daycard__row"><span>${t.viaTransport}</span></div>`; }
     if(t.transport){ html += `<div class="daycard__row"><span>${t.transport}</span></div>`; }
     if(t.note){ html += `<div class="daycard__row"><span class="icon">\ud83d\udcdd</span><span>${t.note}</span></div>`; }
     html += `<div class="daycard__row stay"><span class="icon">\ud83c\udfe8</span><span>\u4f4f\u5bbf\uff1a${t.stay}</span></div>`;
