@@ -86,11 +86,36 @@
     transition:opacity .3s ease;
   }
   .daypage.active{ opacity:1; }
-  .swipehint{
-    flex:0 0 auto; text-align:center;
-    font-size:12.5px; color:#8892A0;
-    padding:6px 16px 10px; letter-spacing:1px;
+  .pagerarrow{
+    position:fixed; z-index:2500;
+    top:calc(var(--header-h, 196px) + (100dvh - var(--header-h, 196px)) / 2);
+    transform:translateY(-50%);
+    width:26px; height:26px; border-radius:999px; border:none;
+    background:rgba(22,35,58,.16); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:14px; font-weight:900; line-height:1;
+    cursor:pointer; touch-action:manipulation;
+    transition:opacity .3s ease, background-color .25s ease;
   }
+  .pagerarrow.left{ left:8px; }
+  .pagerarrow.right{ right:8px; }
+  .pagerarrow:active{ background:rgba(22,35,58,.35); }
+  .pagerarrow.is-hidden{ opacity:0; pointer-events:none; }
+
+  /* Soft fade at the very bottom of the screen, hinting that content (the
+     rest of a day card, the map caption, the flight tips) continues below
+     the visible viewport — shown across all three tabs. Stays translucent
+     all the way through (never reaches a solid color) so it never reads as
+     a colored block sitting on top of a card — just a gentle dimming. Fades
+     away once a day card is actually scrolled to its end, since there's
+     nothing left below to hint at. */
+  .bottomfade{
+    position:fixed; left:0; right:0; bottom:0; height:34px;
+    background:linear-gradient(to bottom, rgba(238,241,236,0), rgba(238,241,236,.5));
+    pointer-events:none; z-index:2400;
+    opacity:1; transition:opacity .3s ease;
+  }
+  .bottomfade.is-hidden{ opacity:0; }
   .todayfab{
     position:fixed; right:28px; bottom:10px; z-index:2500;
     background:var(--amber); color:var(--navy); border:none; border-radius:999px;
@@ -164,8 +189,9 @@
 
   /* ---------- Day list view ---------- */
   .daycard{ background:var(--card); border-radius:18px; margin:0 16px 16px; padding:20px 20px 18px; box-shadow:0 2px 8px rgba(22,35,58,.09); border:1px solid var(--line); }
-  .daycard.is-today{ background:var(--today-bg); box-shadow:0 0 0 3px var(--today-ring), 0 2px 6px rgba(22,35,58,.1); }
-  .daycard.is-base{border-left:5px solid var(--amber);}
+  .daycard.is-today{ background:var(--today-bg); border-color:transparent; box-shadow:0 0 0 3px var(--today-ring), 0 2px 6px rgba(22,35,58,.1); }
+  .daycard.is-base{ box-shadow:inset 5px 0 0 0 var(--amber); }
+  .daycard.is-base.is-today{ background:var(--today-bg); border-color:transparent; box-shadow:inset 5px 0 0 0 var(--amber), 0 0 0 3px var(--today-ring), 0 2px 6px rgba(22,35,58,.1); }
   .daycard__top{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; }
   .daycard__date{ display:flex; align-items:center; gap:8px; }
   .daycard__date .d{ font-family:ui-monospace,'SF Mono','Menlo',monospace; font-weight:700; font-size:20px; color:var(--navy); }
@@ -291,6 +317,8 @@
     </div>
   </section>
 </main>
+
+<div class="bottomfade" id="bottomFade" aria-hidden="true"></div>
 
 <script>
 const trip = [
@@ -822,7 +850,9 @@ function buildList(){
     }
     html += `</div></div>`;
   });
-  html += '</div><div class="swipehint">\u2190 \u5de6\u53f3\u6ed1\u52d5\u5207\u63db\u65e5\u671f \u2192</div>';
+  html += '</div>';
+  html += `<button type="button" class="pagerarrow left${activeIndex===0?' is-hidden':''}" id="arrowPrev" onclick="goToPage(activeIndex-1, true)" aria-label="\u4e0a\u4e00\u5929">\u2039</button>`;
+  html += `<button type="button" class="pagerarrow right${activeIndex===trip.length-1?' is-hidden':''}" id="arrowNext" onclick="goToPage(activeIndex+1, true)" aria-label="\u4e0b\u4e00\u5929">\u203a</button>`;
   if(todayIndex >= 0){
     html += `<button type="button" class="todayfab${todayIndex===activeIndex?' is-hidden':''}" id="todayFab" onclick="goToPage(${todayIndex}, true)">\u4eca\u5929</button>`;
   }
@@ -830,6 +860,22 @@ function buildList(){
 
   pagerEl = document.getElementById('pager');
   pagerEl.addEventListener('scroll', onPagerScroll, { passive:true });
+  el.querySelectorAll('.daypage').forEach(dp=>{
+    dp.addEventListener('scroll', ()=>{
+      if(dp.classList.contains('active')) checkBottomFade(dp);
+    }, { passive:true });
+  });
+}
+
+// The bottom fade is meant to hint that a day card's content continues below
+// the screen — so once you've actually scrolled that card to its end, it has
+// nothing left to hint at and fades away (smoothly, via the CSS transition
+// on .bottomfade, never an abrupt cut).
+function checkBottomFade(pageEl){
+  const fade = document.getElementById('bottomFade');
+  if(!fade || !pageEl) return;
+  const atBottom = pageEl.scrollHeight - pageEl.scrollTop - pageEl.clientHeight < 8;
+  fade.classList.toggle('is-hidden', atBottom);
 }
 
 /* The pager is a native horizontal scroller with mandatory snap, so the
@@ -888,10 +934,18 @@ function setActiveIndex(i){
     }, 450);
   }
   const page = document.getElementById('page-'+i);
-  if(page) page.classList.add('active');
+  if(page){
+    page.classList.add('active');
+    checkBottomFade(page);
+  }
 
   const fab = document.getElementById('todayFab');
   if(fab) fab.classList.toggle('is-hidden', i===todayIndex);
+
+  const arrowPrev = document.getElementById('arrowPrev');
+  const arrowNext = document.getElementById('arrowNext');
+  if(arrowPrev) arrowPrev.classList.toggle('is-hidden', i===0);
+  if(arrowNext) arrowNext.classList.toggle('is-hidden', i===trip.length-1);
 }
 
 function goToPage(i, smooth){
@@ -954,6 +1008,10 @@ function showView(name){
 
     setHeaderHeightVar();
     if(name==='map' && leafletMap){ setTimeout(()=>leafletMap.invalidateSize(), 80); }
+    if(name!=='list'){
+      const fade = document.getElementById('bottomFade');
+      if(fade) fade.classList.remove('is-hidden');
+    }
     if(name==='list'){
       setTimeout(()=>{
         // The very first time the day-list tab is opened, land on today's
