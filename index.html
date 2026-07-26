@@ -45,19 +45,19 @@
   .appbar__route{ margin-top:2px; font-size:13.5px; color:#8EA3C4; }
 
   .tabs{ display:flex; gap:0; background:var(--navy-2); padding:8px 10px; }
-  .tab{ flex:1; border:none; background:transparent; color:#C9D3E2; font-family:inherit; font-weight:700; font-size:14.5px; padding:12px 4px; border-radius:12px; display:flex; align-items:center; justify-content:center; gap:5px; min-height:48px; white-space:nowrap; }
+  .tab{ flex:1; border:none; background:transparent; color:#C9D3E2; font-family:inherit; font-weight:700; font-size:14.5px; padding:12px 4px; border-radius:12px; display:flex; align-items:center; justify-content:center; gap:5px; min-height:48px; white-space:nowrap; transition:background-color .3s ease, color .3s ease; }
   .tab.active{ background:var(--amber); color:var(--navy); }
 
   .datebar{ display:flex; gap:8px; overflow-x:auto; background:var(--navy-3); padding:10px 12px; -webkit-overflow-scrolling:touch; touch-action:pan-x; }
   .datebar::-webkit-scrollbar{display:none;}
   .datebar.hidden{display:none;}
-  .datechip{ flex:0 0 auto; background:rgba(255,255,255,.12); border:1.5px solid rgba(255,255,255,.25); color:#fff; font-weight:700; font-size:14px; padding:8px 13px; border-radius:999px; white-space:nowrap; font-family:ui-monospace,'SF Mono','Menlo','Noto Sans TC',monospace; touch-action:manipulation; cursor:pointer; }
+  .datechip{ flex:0 0 auto; background:rgba(255,255,255,.12); border:1.5px solid rgba(255,255,255,.25); color:#fff; font-weight:700; font-size:14px; padding:8px 13px; border-radius:999px; white-space:nowrap; font-family:ui-monospace,'SF Mono','Menlo','Noto Sans TC',monospace; touch-action:manipulation; cursor:pointer; transition:background-color .3s ease, border-color .3s ease, color .3s ease; }
   .datechip.sat{ color:#93C5FD; border-color:#3B82F6; }
   .datechip.sun{ color:#FCA5A5; border-color:#DC2626; }
   .datechip.active{ background:var(--amber); border-color:var(--amber-deep); color:var(--navy); }
 
   main{max-width:640px; margin:0 auto;}
-  section{ display:none; opacity:0; transition:opacity .18s ease; }
+  section{ display:none; opacity:0; transition:opacity .3s ease; }
   section.active{ display:block; }
   section.active.visible{ opacity:1; }
   #mapView{ padding:4px 0 30px; }
@@ -89,8 +89,18 @@
   .swipehint{
     flex:0 0 auto; text-align:center;
     font-size:12.5px; color:#8892A0;
-    padding:8px 16px 12px; letter-spacing:1px;
+    padding:16px 16px 26px; letter-spacing:1px;
   }
+  .todayfab{
+    position:fixed; right:28px; bottom:18px; z-index:2500;
+    background:var(--amber); color:var(--navy); border:none; border-radius:999px;
+    padding:8px 14px; font-family:inherit; font-weight:800; font-size:12.5px;
+    display:flex; align-items:center; gap:6px;
+    box-shadow:0 3px 8px rgba(22,35,58,.28);
+    cursor:pointer; touch-action:manipulation;
+    transition:opacity .3s ease, transform .3s ease;
+  }
+  .todayfab.is-hidden{ opacity:0; transform:translateY(10px) scale(.92); pointer-events:none; }
 
   /* ---------- Map view ---------- */
   .mapwrap{ padding:16px 16px 4px; }
@@ -101,6 +111,10 @@
   .num-pin{ background:var(--amber); border:2.5px solid var(--amber-deep); color:var(--navy); font-weight:900; font-family:ui-monospace,'SF Mono','Menlo',monospace; font-size:12.5px; line-height:1; padding:5px 8px; border-radius:999px; white-space:nowrap; width:max-content; display:inline-flex; align-items:center; justify-content:center; box-shadow:0 0 0 2.5px #fff, 0 1px 3px rgba(0,0,0,.25); }
   .arrow-wrap{ width:auto !important; height:auto !important; background:none; border:none; }
   .route-arrow{ width:0; height:0; border-left:10px solid #2C4571; border-top:6.5px solid transparent; border-bottom:6.5px solid transparent; position:relative; left:-5px; top:-6.5px; filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 1px #fff); }
+  .side-pin{ background:#fff; border:2px solid #7C8DA6; color:#42556F; font-weight:800; font-size:11.5px; line-height:1; padding:4px 8px; border-radius:999px; white-space:nowrap; width:max-content; display:inline-flex; align-items:center; justify-content:center; box-shadow:0 1px 3px rgba(0,0,0,.2); }
+  .date-pin-wrap .side-pin{ position:relative; left:-50%; top:-10px; }
+  .popup-side{ font-size:13px; color:var(--ink-soft); margin-top:2px; }
+  .popup-side.muted{ font-size:12.5px; color:#8892A0; margin-top:5px; line-height:1.5; }
   .date-pin-wrap{ width:auto !important; height:auto !important; background:none; border:none; }
   .date-pin-wrap .num-pin{ position:relative; left:-50%; top:-11px; }
   .leaflet-popup-content{ font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif; font-size:14px; line-height:1.5; margin:12px 14px; }
@@ -108,12 +122,12 @@
   .popup-en{ display:block; font-weight:600; font-size:12.5px; color:var(--ink-soft); margin-top:1px; letter-spacing:.2px; }
   .popup-entry{ margin-bottom:10px; }
   .popup-entry:last-child{ margin-bottom:0; }
-  .popup-daylink{ display:block; width:100%; text-align:left; background:#F1F3F5; border:1px solid var(--line); border-radius:9px; padding:7px 11px; font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif; font-weight:700; font-size:13.5px; color:var(--navy); cursor:pointer; touch-action:manipulation; margin-top:5px; }
+  .popup-daylink{ display:block; width:100%; text-align:left; background:#F1F3F5; border:1px solid var(--line); border-radius:9px; padding:7px 11px; font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif; font-weight:700; font-size:13.5px; color:var(--navy); cursor:pointer; touch-action:manipulation; margin-top:5px; transition:background-color .25s ease, border-color .25s ease; }
   .popup-daylink:active{ background:var(--amber); border-color:var(--amber-deep); }
   .popup-transport{ font-weight:800; font-size:13.5px; padding-left:2px; }
   .popup-transport.oneway{ color:#1D4ED8; }
   .popup-transport.roundtrip{ color:#DC2626; }
-  .popup-gmap{ display:block; width:100%; box-sizing:border-box; text-align:left; background:#E8F0FE; border:1px solid #B9D3FB; border-radius:9px; padding:7px 11px; font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif; font-weight:700; font-size:13.5px; color:#1A56DB; text-decoration:none; margin-top:8px; touch-action:manipulation; }
+  .popup-gmap{ display:block; width:100%; box-sizing:border-box; text-align:left; background:#E8F0FE; border:1px solid #B9D3FB; border-radius:9px; padding:7px 11px; font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif; font-weight:700; font-size:13.5px; color:#1A56DB; text-decoration:none; margin-top:8px; touch-action:manipulation; transition:background-color .25s ease; }
   .popup-gmap:active{ background:#CFE0FD; }
 
   /* ---------- Flights page ---------- */
@@ -139,7 +153,7 @@
   .flighttime__mid span{ display:block; font-size:11.5px; color:var(--ink-soft); font-weight:700; white-space:nowrap; }
 
 
-  .flightmap{ display:block; text-align:left; background:#E8F0FE; border:1px solid #B9D3FB; border-radius:10px; padding:10px 12px; font-weight:700; font-size:13.5px; color:#1A56DB; text-decoration:none; margin-top:8px; touch-action:manipulation; }
+  .flightmap{ display:block; text-align:left; background:#E8F0FE; border:1px solid #B9D3FB; border-radius:10px; padding:10px 12px; font-weight:700; font-size:13.5px; color:#1A56DB; text-decoration:none; margin-top:8px; touch-action:manipulation; transition:background-color .25s ease; }
   .flightmap:active{ background:#CFE0FD; }
 
   .flighttip{ background:var(--card); border:1px dashed var(--line); border-radius:14px; padding:14px 16px; font-size:13.5px; color:var(--ink-soft); }
@@ -149,24 +163,30 @@
 
 
   /* ---------- Day list view ---------- */
-  .daycard{ background:var(--card); border-radius:16px; margin:0 16px 16px; padding:16px 18px; box-shadow:0 2px 6px rgba(22,35,58,.08); border:1px solid var(--line); }
+  .daycard{ background:var(--card); border-radius:18px; margin:0 16px 16px; padding:20px 20px 18px; box-shadow:0 2px 8px rgba(22,35,58,.09); border:1px solid var(--line); }
   .daycard.is-today{ background:var(--today-bg); box-shadow:0 0 0 3px var(--today-ring), 0 2px 6px rgba(22,35,58,.1); }
   .daycard.is-base{border-left:5px solid var(--amber);}
-  .daycard__top{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px; }
-  .daycard__date{ display:flex; align-items:baseline; gap:8px; }
+  .daycard__top{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; }
+  .daycard__date{ display:flex; align-items:center; gap:8px; }
   .daycard__date .d{ font-family:ui-monospace,'SF Mono','Menlo',monospace; font-weight:700; font-size:20px; color:var(--navy); }
   .daycard__date .w{ font-size:13.5px; font-weight:700; color:#fff; background:var(--navy-3); padding:3px 9px; border-radius:8px; }
   .daycard__date .w.sat{ background:#2563EB; }
   .daycard__date .w.sun{ background:#DC2626; }
   .today-tag{ font-size:12px; font-weight:900; color:#fff; background:var(--amber-deep); padding:4px 10px; border-radius:999px; letter-spacing:1px; }
-  .daycard__title{ font-size:19px; font-weight:900; color:var(--navy); margin-bottom:8px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .daycard__top-right{ display:flex; align-items:center; gap:8px; }
+  .daycard__maplink{ flex:0 0 auto; border:none; background:#F1F3F5; color:var(--navy-3); width:32px; height:32px; border-radius:999px; display:flex; align-items:center; justify-content:center; font-size:15px; line-height:1; cursor:pointer; touch-action:manipulation; transition:background-color .25s ease; }
+  .daycard__maplink:active{ background:var(--amber); }
+  .daycard__title{ font-size:20px; font-weight:900; color:var(--navy); margin-bottom:14px; line-height:1.4; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
   .badge-daytrip{ display:inline-block; font-size:12px; font-weight:700; color:var(--amber-deep); background:#FCEFD9; padding:2px 9px; border-radius:999px; }
-  .daycard ul.highlights{ list-style:none; margin:0 0 10px; padding:0; }
-  .daycard ul.highlights li{ position:relative; padding-left:20px; margin-bottom:6px; color:#2A3442; }
+  .daycard ul.highlights{ list-style:none; margin:0 0 4px; padding:0; }
+  .daycard ul.highlights li{ position:relative; padding-left:20px; margin-bottom:9px; line-height:1.6; color:#2A3442; }
   .daycard ul.highlights li::before{ content:"•"; position:absolute; left:2px; color:var(--amber-deep); font-weight:900; }
-  .daycard__row{ display:flex; align-items:flex-start; gap:8px; font-size:14.5px; color:var(--ink-soft); margin-top:8px; padding-top:8px; border-top:1px dashed var(--line); }
+  .daycard__row{ display:flex; align-items:flex-start; gap:8px; font-size:14.5px; line-height:1.65; color:var(--ink-soft); margin-top:12px; padding-top:12px; border-top:1px dashed var(--line); }
   .daycard__row .icon{flex:0 0 auto; font-size:16px;}
   .daycard__row.stay{color:var(--navy-3); font-weight:700;}
+  .daycard__links{ display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; padding-top:12px; border-top:1px dashed var(--line); }
+  .daycard__links a{ display:inline-block; background:#F1F5FB; border:1px solid #D6E2F2; border-radius:999px; padding:6px 12px; font-size:13px; font-weight:700; color:#1A56DB; text-decoration:none; touch-action:manipulation; transition:background-color .25s ease; }
+  .daycard__links a:active{ background:#DCE8F8; }
 
   .leghead{ margin:26px 16px 10px; font-size:15px; font-weight:900; color:var(--navy-2); display:flex; align-items:center; gap:8px; }
   .leghead::after{ content:""; flex:1; height:2px; background:var(--line); }
@@ -197,9 +217,8 @@
     <div class="mapwrap"><div id="leafletMap"></div></div>
     <div class="mapcaption">
       <ol>
-        <li>圖上標示＝抵達該城市的日期（停留多天者標第一天）。</li>
-        <li>城市圖標可看交通方式與時間（藍色＝單程／紅色＝當天來回），並可跳至當日行程。</li>
-        <li>虛線＝原路往返；地圖放大後會顯示行進方向的箭頭。</li>
+        <li>橘色標籤＝抵達日期；白色標籤＝自由選項（9/6 科爾馬周邊小鎮、9/17 布拉格的庫特納霍拉），可視當天狀況決定要不要去，放大地圖才會顯示。</li>
+        <li>點城市可看交通方式與時間，並跳至當日行程。藍色＝單程、紅色＝當天來回；虛線＝原路往返，放大地圖可看到方向箭頭。</li>
         <li>「在 Google 地圖看車站」可開啟該城市主要車站的 Google 地圖，方便查詢實際交通路線與班次。</li>
       </ol>
     </div>
@@ -276,55 +295,79 @@
 <script>
 const trip = [
   {date:"8/30", weekday:"日", title:"法蘭克福抵達", flags:["🇩🇪"],
-   highlights:["羅馬廣場","法蘭克福主教座堂","歌德之家","施泰德美術館"],
-   transport:"✈️ 台北 → 法蘭克福", note:"8/29 22:50 起飛 → 8/30 6:50 抵達（家人航班）",
+   highlights:["調整時差，輕鬆玩","羅馬廣場","法蘭克福主教座堂","歌德之家","施泰德美術館","Bären-Treff 小熊軟糖"],
+   transport:"✈️ 台北 → 法蘭克福",
+   note:"8/29 22:50 起飛 → 8/30 06:50 抵達",
    stay:"法蘭克福", isBase:true, mapCity:"法蘭克福"},
 
   {date:"8/31", weekday:"一", title:"科隆", flags:["🇩🇪"], isDaytrip:true,
-   highlights:["科隆大教堂","霍亨索倫橋","科隆三角大樓","萊茵河","巧克力博物館","香水博物館"],
-   transport:"🚄 ICE 約1小時", note:null, stay:"法蘭克福", isBase:false, mapCity:"科隆"},
+   highlights:["科隆大教堂","霍亨索倫橋","科隆三角大樓","巧克力博物館","香水博物館","萊茵河"],
+   transport:"🚄 ICE 約1小時", note:null,
+   stay:"法蘭克福", isBase:false, mapCity:"科隆"},
 
-  {date:"9/1", weekday:"三", title:"羅騰堡＋烏茲堡", flags:["🇩🇪"], isDaytrip:true,
-   highlights:["羅騰堡老城城牆","羅騰堡雪球 Schneeball","時間充裕可續訪烏茲堡宮殿、馬利恩堡要塞"],
-   transport:"🚆 區域車 約2小時", note:"德鐵月票啟用", stay:"法蘭克福", isBase:false, mapCity:"羅騰堡"},
+  {date:"9/1", weekday:"二", title:"羅騰堡＋烏茲堡", flags:["🇩🇪"], isDaytrip:true,
+   highlights:["羅騰堡老城城牆","品嚐羅騰堡雪球 Schneeball","時間充裕可續訪烏茲堡宮殿、馬利恩堡要塞"],
+   viaCity:"烏茲堡",
+   viaTransport:"🚄 ICE 約1小時10分（法蘭克福→烏茲堡）",
+   transport:"🚆 區域車 約1小時（烏茲堡→羅騰堡，RE80 轉 RB82）",
+   sameDayReturn:true,
+   note:"德鐵月票今日啟用。注意：月票只適用區域車（RE／RB／S-Bahn），ICE 需另外購票。",
+   links:[{label:"羅騰堡攻略", url:"https://www.bring-you.info/zh-tw/rothenburg-ob-der-tauber"}],
+   stay:"法蘭克福", isBase:false, mapCity:"羅騰堡"},
 
-  {date:"9/2", weekday:"二", title:"呂德斯海姆", flags:["🇩🇪"], isDaytrip:true,
-   highlights:["葡萄酒小鎮","纜車","呂德斯海姆咖啡 Rüdesheimer Kaffee","萊茵河遊船"],
-   transport:"🚆 區域車 約1小時", note:null, stay:"法蘭克福", isBase:false, mapCity:"呂德斯海姆"},
+  {date:"9/2", weekday:"三", title:"呂德斯海姆", flags:["🇩🇪"], isDaytrip:true,
+   highlights:["斑鳩小巷","葡萄園纜車上山來回","品嚐呂德斯海姆咖啡 Rüdesheimer Kaffee","下午搭萊茵河遊船"],
+   transport:"🚆 區域車 約1小時", note:null,
+   links:[{label:"呂德斯海姆＋萊茵河遊船", url:"https://www.leo-travel.idv.tw/15045/germany-rudesheim-rhein-ferry-koblenz-day-tour"}],
+   stay:"法蘭克福", isBase:false, mapCity:"呂德斯海姆"},
 
   {date:"9/3", weekday:"四", title:"法蘭克福 → 卡爾斯魯爾", flags:["🇩🇪"],
-   highlights:["卡爾斯魯爾市區"],
+   highlights:["卡爾斯魯厄宮","馬克特廣場","王宮花園","市區散步"],
    transport:"🚄 ICE 約1小時", note:"家人移動到卡魯，與工作坊會合",
    stay:"卡爾斯魯爾", isBase:true, mapCity:"卡爾斯魯爾", alsoAt:"法蘭克福"},
 
   {date:"9/4", weekday:"五", title:"海德堡", flags:["🇩🇪"], isDaytrip:true,
-   highlights:["海德堡城堡","老橋","老城區"],
-   transport:"🚆 區域車 約40分鐘", note:null, stay:"卡爾斯魯爾", isBase:false, mapCity:"海德堡"},
+   highlights:["穀物市場","海德堡纜車","海德堡城堡","王座山","海德堡大學、Zeughaus 學生食堂、學生監獄","舊橋","蛇徑、哲學家小徑","老城區","Bären-Treff 小熊軟糖"],
+   transport:"🚆 區域車 約40分鐘",
+   note:"遊客中心可購買海德堡卡，含纜車與城堡參觀。",
+   links:[{label:"海德堡攻略", url:"https://www.bring-you.info/zh-tw/heidelberg"}],
+   stay:"卡爾斯魯爾", isBase:false, mapCity:"海德堡"},
 
   {date:"9/5", weekday:"六", title:"史特拉斯堡", flags:["🇫🇷"], isDaytrip:true,
-   highlights:["史特拉斯堡大教堂","Petite France","運河"],
-   transport:"🚆 跨國 ICE 約45分鐘", note:"月票跨國後需另購票", stay:"卡爾斯魯爾", isBase:false, mapCity:"史特拉斯堡"},
+   highlights:["史特拉斯堡車站","小法國區與運河沿岸","克勒貝爾廣場","卡梅澤爾府邸吃傳統菜","史特拉斯堡主教座堂","阿爾薩斯奶油圓蛋糕 Kugelhopf"],
+   transport:"🚆 跨國 ICE 約45分鐘",
+   note:"也可搭區間車或巴士。出德國後月票不適用，需另外付費。",
+   links:[{label:"史特拉斯堡攻略", url:"https://www.leo-travel.idv.tw/72370/france-strasbourg-travel-guide"}],
+   stay:"卡爾斯魯爾", isBase:false, mapCity:"史特拉斯堡"},
 
   {date:"9/6", weekday:"日", title:"科爾馬", flags:["🇫🇷"], isDaytrip:true,
-   highlights:["小威尼斯","老城漫步"],
-   transport:"🚆 跨國 ICE＋區域車 約1小時40分", note:"月票跨國後需另購票", stay:"卡爾斯魯爾", isBase:false, mapCity:"科爾馬"},
+   highlights:["小威尼斯","老城漫步","普菲斯特屋","科爾馬市集（有免費廁所）","周邊小鎮：圖克海姆 Turckheim（火車10分）、埃吉桑 Eguisheim（公車15分內）、凱瑟斯貝格 Kaysersberg、里屈埃維 Riquewihr（公車約30分）"],
+   transport:"🚆 跨國 ICE＋區域車 約1小時40分",
+   note:"出德國後月票不適用。票券可考慮：① ALSA+ 24H Territoire Alsace 一日票，可搭阿爾薩斯地區火車與公車（團體票 €54）；② Kut'zig 露天敞篷觀光巴士（€32／人，三人 €96）。",
+   links:[
+     {label:"科爾馬", url:"https://mimigo.tw/colmar/"},
+     {label:"埃吉桑", url:"https://toyadailylife.com/eguisheim/"},
+     {label:"里屈埃維", url:"https://bobotravel.tw/blog/post/riquewihr"},
+     {label:"Kut'zig 官網", url:"https://kutzig.fr/en/"}
+   ],
+   stay:"卡爾斯魯爾", isBase:false, mapCity:"科爾馬"},
 
   {date:"9/7", weekday:"一", title:"卡爾斯魯爾 → 慕尼黑", flags:["🇩🇪"],
-   highlights:["瑪利亞廣場","HB 啤酒屋晚餐","慕尼黑王宮","英國花園","維克圖阿連市場"],
+   highlights:["慕尼黑王宮","瑪利亞廣場","HB 啤酒屋","維克圖阿連市場"],
    transport:"🚄 ICE 約3小時", note:"早上出發前往慕尼黑",
    stay:"慕尼黑", isBase:true, mapCity:"慕尼黑", alsoAt:"卡爾斯魯爾"},
 
   {date:"9/8", weekday:"二", title:"慕尼黑 → 薩爾斯堡 → 國王湖", flags:["🇩🇪","🇦🇹"],
-   highlights:["電動船","聖巴托羅繆教堂吃魚","上湖","Jenner 纜車（視時間決定）"],
+   highlights:["搭乘電動船","聖巴托羅繆教堂吃魚","搭船到上湖","Jenner 纜車上山（視時間決定）"],
    viaCity:"薩爾斯堡", viaDashed:true,
    viaTransport:"🚄 火車 約1小時30分（慕尼黑→薩爾斯堡）",
    transport:"🚌 巴士 840＋841 約1小時（薩爾斯堡→國王湖）",
-   note:"巴士 840 從薩爾斯堡火車站發車到貝希特斯加登（約50分），再轉 841 到國王湖（約10–15分）。可向司機購買一日票（約 €11，只收現金，含來回與區內轉乘）。德鐵月票不適用。當晚住薩爾斯堡。",
+   note:"巴士 840 從薩爾斯堡火車站發車到貝希特斯加登（約50分），再轉 841 到國王湖（約10–15分）。可向司機購買一日票（約 €11，只收現金）。德鐵月票不適用。回程末班車較早，需留意時間。當晚住薩爾斯堡。",
    stay:"薩爾斯堡", isBase:true, mapCity:"國王湖", alsoAt:"薩爾斯堡", sameDayReturn:true},
 
   {date:"9/9", weekday:"三", title:"薩爾斯堡 → 慕尼黑", flags:["🇦🇹","🇩🇪"],
-   highlights:["薩爾斯堡要塞","薩爾斯堡主教座堂","莫札特故居","米拉貝爾宮與花園"],
-   transport:"🚄 火車 約1小時30分", note:"上午逛薩爾斯堡，傍晚搭車返回慕尼黑", dashedLeg:true,
+   highlights:["搭纜車上薩爾斯堡要塞","薩爾斯堡主教座堂","莫札特故居","米拉貝爾宮與花園","品嚐莫札特巧克力"],
+   transport:"🚄 火車 約1小時40分", note:"上午逛薩爾斯堡，傍晚返回慕尼黑", dashedLeg:true,
    stay:"慕尼黑", isBase:true, mapCity:"薩爾斯堡"},
 
   {date:"9/10", weekday:"四", title:"慕尼黑 → 柏林", flags:["🇩🇪"],
@@ -333,37 +376,47 @@ const trip = [
    stay:"柏林", isBase:true, mapCity:"柏林", alsoAt:"慕尼黑"},
 
   {date:"9/11", weekday:"五", title:"柏林", flags:["🇩🇪"],
-   highlights:["布蘭登堡門","國會大廈","猶太紀念碑","Checkpoint Charlie","圍牆紀念館","幽靈車站"],
-   transport:null, note:null, stay:"柏林", isBase:false, mapCity:"柏林"},
+   highlights:["國會大廈","布蘭登堡門","猶太紀念碑","查理檢查哨","淚宮","圍牆紀念館","幽靈車站"],
+   transport:null, note:null,
+   stay:"柏林", isBase:false, mapCity:"柏林"},
 
   {date:"9/12", weekday:"六", title:"波茨坦", flags:["🇩🇪"], isDaytrip:true,
    highlights:["無憂宮花園","新宮","中國茶館"],
-   transport:"🚆 S-Bahn 約30分鐘", note:null, stay:"柏林", isBase:false, mapCity:"波茨坦"},
+   transport:"🚆 S-Bahn 約30分鐘", note:null,
+   links:[{label:"無憂宮官網", url:"https://www.spsg.de/en/home"}],
+   stay:"柏林", isBase:false, mapCity:"波茨坦"},
 
   {date:"9/13", weekday:"日", title:"柏林", flags:["🇩🇪"],
-   highlights:["柏林愛樂 管風琴＋豎琴音樂會 11:00","博物館島","East Side Gallery"],
-   transport:null, note:null, stay:"柏林", isBase:false, mapCity:"柏林"},
+   highlights:["柏林愛樂音樂會（依官網場次）","或博物館島、東邊畫廊","百貨公司"],
+   transport:null, note:null,
+   links:[{label:"柏林愛樂節目表", url:"https://www.berliner-philharmoniker.de/en/concerts/calendar/"}],
+   stay:"柏林", isBase:false, mapCity:"柏林"},
 
   {date:"9/14", weekday:"一", title:"柏林 → 布拉格", flags:["🇩🇪","🇨🇿"],
-   highlights:["Berliner Unterwelten 地下世界","恐怖地形圖"],
+   highlights:["柏林地下世界 Berliner Unterwelten","恐怖地形圖"],
    transport:"🚆 跨國 約4小時", note:"下午或晚上出發前往布拉格",
    stay:"布拉格", isBase:true, mapCity:"布拉格", alsoAt:"柏林"},
 
   {date:"9/15", weekday:"二", title:"布拉格", flags:["🇨🇿"],
-   highlights:["布拉格城堡","聖維特大教堂","黃金巷"],
-   transport:null, note:"德鐵月票不適用，改用克朗現金／當地票", stay:"布拉格", isBase:false, mapCity:"布拉格"},
+   highlights:["斯特拉霍夫修道院","羅瑞塔教堂","布拉格城堡區"],
+   transport:null,
+   note:"德鐵月票不適用，貨幣改用克朗（CZK）。可考慮購買布拉格卡（Prague Visitor Pass），含多數景點門票與市區大眾運輸，出發前先評估要去的景點是否划算。",
+   stay:"布拉格", isBase:false, mapCity:"布拉格"},
 
   {date:"9/16", weekday:"三", title:"布拉格", flags:["🇨🇿"],
-   highlights:["舊城廣場天文鐘","查理大橋","小城區","佩特任山夕陽"],
-   transport:null, note:null, stay:"布拉格", isBase:false, mapCity:"布拉格"},
+   highlights:["舊城區（老城廣場、火藥塔）","中午吃傳統菜","國家博物館或高堡區"],
+   transport:null, note:null,
+   stay:"布拉格", isBase:false, mapCity:"布拉格"},
 
-  {date:"9/17", weekday:"四", title:"布拉格", flags:["🇨🇿"],
-   highlights:["自由活動","卡夫卡博物館","維謝赫拉德城堡","購物"],
-   transport:null, note:"晚上整理行李", stay:"布拉格", isBase:false, mapCity:"布拉格"},
+  {date:"9/17", weekday:"四", title:"庫特納霍拉 or 布拉格", flags:["🇨🇿"],
+   highlights:["庫特納霍拉一日遊（人骨教堂、聖芭芭拉教堂）","或維謝赫拉德城堡（高堡區）、購物"],
+   transport:"🚆 區域車 約1小時", note:"晚上整理行李",
+   stay:"布拉格", isBase:false, mapCity:"布拉格"},
 
   {date:"9/18", weekday:"五", title:"布拉格 → 台灣", flags:["🇨🇿"],
    highlights:[],
-   transport:"✈️ 布拉格直飛台北", note:"市區到機場約40分鐘；9/18 10:40 起飛 → 9/19 5:50 抵達",
+   transport:"✈️ 布拉格直飛台北",
+   note:"市區到機場約40分鐘，最晚 8:00 抵達機場較保險。9/18 10:40 起飛 → 9/19 05:05 抵達。",
    stay:"高雄（到家）", isBase:true, mapCity:null},
 ];
 
@@ -372,6 +425,7 @@ const cityCoords = {
   "法蘭克福":[50.1109, 8.6821],
   "科隆":[50.9375, 6.9603],
   "羅騰堡":[49.3761, 10.1866],
+  "烏茲堡":[49.7913, 9.9534],
   "呂德斯海姆":[49.9783, 7.9256],
   "海德堡":[49.3988, 8.6724],
   "史特拉斯堡":[48.5734, 7.7521],
@@ -438,11 +492,13 @@ function buildGraph(){
     }
     // a stopover: travel to viaCity first, then out-and-back to mapCity the same day
     if(t.viaCity && t.viaCity !== currentPosition){
+      const prev = currentPosition;
+      const returnsToBase = (stay === prev);
       ensureNode(t.viaCity);
-      connections.push({from:currentPosition, to:t.viaCity, label:t.viaTransport, dashed:!!t.viaDashed});
-      currentPosition = t.viaCity;
+      connections.push({from:prev, to:t.viaCity, label:t.viaTransport, dashed:!!t.viaDashed, roundtrip:returnsToBase});
       ensureNode(mapCity);
       connections.push({from:t.viaCity, to:mapCity, label:t.transport, roundtrip:true});
+      currentPosition = returnsToBase ? prev : t.viaCity;
       return;
     }
     ensureNode(mapCity);
@@ -470,6 +526,7 @@ const cityNames = {
   "法蘭克福":{local:"Frankfurt am Main", en:"Frankfurt", tag:"德"},
   "科隆":{local:"Köln", en:"Cologne", tag:"德"},
   "羅騰堡":{local:"Rothenburg ob der Tauber", en:"Rothenburg ob der Tauber", tag:"德"},
+  "烏茲堡":{local:"Würzburg", en:"Wurzburg", tag:"德"},
   "呂德斯海姆":{local:"Rüdesheim am Rhein", en:"Rüdesheim am Rhein", tag:"德"},
   "卡爾斯魯爾":{local:"Karlsruhe", en:"Karlsruhe", tag:"德"},
   "海德堡":{local:"Heidelberg", en:"Heidelberg", tag:"德"},
@@ -490,10 +547,36 @@ function cityNameHTML(city){
   return `<span class="popup-en">${txt}</span>`;
 }
 
+// Optional side trips — shown on the map for reference only, in a lighter
+// style so they don't read as fixed parts of the itinerary.
+const sideTrips = [
+  {from:"科爾馬", name:"圖克海姆", en:"Turckheim", tag:"法", coords:[48.0847, 7.2761], how:"火車約 10 分",
+   note:"9/6 科爾馬周邊的自由選項，可視當天狀況決定。"},
+  {from:"科爾馬", name:"埃吉桑", en:"Eguisheim", tag:"法", coords:[48.0447, 7.3064], how:"公車 15 分內",
+   note:"9/6 科爾馬周邊的自由選項，可視當天狀況決定。"},
+  {from:"科爾馬", name:"凱瑟斯貝格", en:"Kaysersberg", tag:"法", coords:[48.1381, 7.2647], how:"公車約 30 分",
+   note:"9/6 科爾馬周邊的自由選項，可視當天狀況決定。"},
+  {from:"科爾馬", name:"里屈埃維", en:"Riquewihr", tag:"法", coords:[48.1667, 7.2978], how:"公車約 30 分",
+   note:"9/6 科爾馬周邊的自由選項，可視當天狀況決定。"},
+  {from:"布拉格", name:"庫特納霍拉", en:"Kutná Hora", tag:"捷", coords:[49.9481, 15.2685], how:"火車約 1 小時",
+   note:"9/17 布拉格的自由選項（人骨教堂、聖芭芭拉教堂），可視當天狀況決定。"},
+];
+
+// Google Maps search query for each side-trip town's station (or town centre,
+// for the ones without a proper train station).
+const sideStationQuery = {
+  "圖克海姆":"Gare de Turckheim",
+  "埃吉桑":"Eguisheim, France",
+  "凱瑟斯貝格":"Gare de Kaysersberg",
+  "里屈埃維":"Riquewihr, France",
+  "庫特納霍拉":"Kutná Hora hlavní nádraží",
+};
+
 const stationQuery = {
   "法蘭克福":"Frankfurt Hauptbahnhof",
   "科隆":"Köln Hauptbahnhof",
   "羅騰堡":"Rothenburg ob der Tauber Bahnhof",
+  "烏茲堡":"Würzburg Hauptbahnhof",
   "呂德斯海姆":"Rüdesheim (Rhein) Bahnhof",
   "卡爾斯魯爾":"Karlsruhe Hauptbahnhof",
   "海德堡":"Heidelberg Hauptbahnhof",
@@ -513,6 +596,9 @@ function googleMapsUrl(query){
 // ---------- build MAP view (Leaflet) ----------
 let leafletMap;
 let arrowLayer = null;
+let sideTripLayer = null;
+let baseZoom = 0;
+const cityMarkers = {};
 function buildMap(){
   const {nodeOrder, connections} = buildGraph();
 
@@ -523,6 +609,11 @@ function buildMap(){
   leafletMap.createPane('arrowPane');
   leafletMap.getPane('arrowPane').style.zIndex = 550;
   leafletMap.getPane('arrowPane').style.pointerEvents = 'none';
+
+  // Own pane for the white side-trip pins, sitting below the orange date
+  // pins (markerPane, 600) so a pin overlapping a city marker never covers it.
+  leafletMap.createPane('sideTripPane');
+  leafletMap.getPane('sideTripPane').style.zIndex = 590;
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom:18, attribution:'&copy; OpenStreetMap contributors'
   }).addTo(leafletMap);
@@ -594,11 +685,12 @@ function buildMap(){
     const coords = cityCoords[city];
     if(!coords) return;
 
-    const entries = trip.filter(t=>t.mapCity===city || t.alsoAt===city);
+    const entries = trip.filter(t=>t.mapCity===city || t.alsoAt===city || t.viaCity===city);
     const pinLabel = entries.length ? entries[0].date : (i+1);
 
     const icon = L.divIcon({ className:'date-pin-wrap', html:`<div class="num-pin">${pinLabel}</div>`, iconSize:null });
     const marker = L.marker(coords, { icon }).addTo(leafletMap);
+    cityMarkers[city] = marker;
 
     let popup = `<div class="popup-title">${city}${cityNameHTML(city)}</div>`;
     entries.forEach(t=>{
@@ -624,7 +716,34 @@ function buildMap(){
     marker.bindPopup(popup, { maxWidth:320, minWidth:250 });
   });
 
-  const allCoords = nodeOrder.map(c=>cityCoords[c]).filter(Boolean);
+  // Optional side trips: thin pale lines + small hollow pins, so they read as
+  // "you could also go here" rather than fixed stops on the itinerary. They
+  // live in their own pane (below the orange date pins) and their own layer,
+  // which is only added to the map once zoomed in — same treatment as the
+  // route arrows — so they don't clutter the zoomed-out overview.
+  sideTripLayer = L.layerGroup();
+  sideTrips.forEach(st=>{
+    const base = cityCoords[st.from];
+    if(!base) return;
+    L.polyline([base, st.coords], { color:'#7C8DA6', weight:2, opacity:.75, dashArray:'1,6', interactive:false, pane:'sideTripPane' }).addTo(sideTripLayer);
+    const icon = L.divIcon({
+      className:'date-pin-wrap',
+      html:`<div class="side-pin">${st.name}</div>`,
+      iconSize:null
+    });
+    let popup = `<div class="popup-title">${st.name}<span class="popup-en">${st.en}（${st.tag||'法'}）</span></div>
+       <div class="popup-side">自 ${st.from} 出發・${st.how}</div>
+       <div class="popup-side muted">${st.note||'自由選項，可視當天狀況決定要不要去。'}</div>`;
+    const q = sideStationQuery[st.name];
+    if(q){
+      popup += `<a class="popup-gmap" href="${googleMapsUrl(q)}" target="_blank" rel="noopener">🗺️ 在 Google 地圖看車站 ›</a>`;
+    }
+    L.marker(st.coords, { icon, pane:'sideTripPane' })
+     .addTo(sideTripLayer)
+     .bindPopup(popup, { maxWidth:300, minWidth:220 });
+  });
+
+  const allCoords = nodeOrder.map(c=>cityCoords[c]).filter(Boolean).concat(sideTrips.map(st=>st.coords));
   const tripBounds = L.latLngBounds(allCoords);
   // Extra top/right room so the date labels on the outermost cities (Berlin at
   // the top, Prague on the right) aren't clipped on narrow phone screens — the
@@ -634,13 +753,15 @@ function buildMap(){
   // Keep the map inside the trip area and stop it zooming out past the
   // fitted view. This caps how many distinct map tiles can ever be
   // requested — zooming in is still allowed for street-level detail.
-  const baseZoom = leafletMap.getZoom();
+  baseZoom = leafletMap.getZoom();
   leafletMap.setMinZoom(baseZoom);
 
   function syncArrows(){
     const show = leafletMap.getZoom() > baseZoom;
     if(show && !leafletMap.hasLayer(arrowLayer)) arrowLayer.addTo(leafletMap);
     if(!show && leafletMap.hasLayer(arrowLayer)) leafletMap.removeLayer(arrowLayer);
+    if(show && !leafletMap.hasLayer(sideTripLayer)) sideTripLayer.addTo(leafletMap);
+    if(!show && leafletMap.hasLayer(sideTripLayer)) leafletMap.removeLayer(sideTripLayer);
   }
   leafletMap.on('zoomend', syncArrows);
   syncArrows();
@@ -681,7 +802,10 @@ function buildList(){
       <div class="daycard ${t.isBase?'is-base':''} ${todayFlag?'is-today':''}" id="${dayAnchors[i]}">
         <div class="daycard__top">
           <div class="daycard__date"><span class="d mono">${t.date}</span><span class="w ${wkndClass(t.weekday)}">\u9031${t.weekday}</span></div>
-          ${todayFlag?'<span class="today-tag">\u4eca\u5929</span>':''}
+          <div class="daycard__top-right">
+            ${todayFlag?'<span class="today-tag">\u4eca\u5929</span>':''}
+            ${t.mapCity?`<button type="button" class="daycard__maplink" onclick="goToMapFromDay('${t.mapCity}')" aria-label="\u5728\u5730\u5716\u4e0a\u67e5\u770b">\ud83d\uddfa\ufe0f</button>`:''}
+          </div>
         </div>
         <div class="daycard__title">${t.flags.join('')} ${t.title}${t.isDaytrip?'<span class="badge-daytrip">\u4e00\u65e5\u904a</span>':''}</div>`;
     if(t.highlights && t.highlights.length){
@@ -691,9 +815,17 @@ function buildList(){
     if(t.transport){ html += `<div class="daycard__row"><span>${t.transport}</span></div>`; }
     if(t.note){ html += `<div class="daycard__row"><span class="icon">\ud83d\udcdd</span><span>${t.note}</span></div>`; }
     html += `<div class="daycard__row stay"><span class="icon">\ud83c\udfe8</span><span>\u4f4f\u5bbf\uff1a${t.stay}</span></div>`;
+    if(t.links && t.links.length){
+      html += `<div class="daycard__links">` +
+        t.links.map(l=>`<a href="${l.url}" target="_blank" rel="noopener">\ud83d\udd17 ${l.label}</a>`).join('') +
+        `</div>`;
+    }
     html += `</div></div>`;
   });
   html += '</div><div class="swipehint">\u2190 \u5de6\u53f3\u6ed1\u52d5\u5207\u63db\u65e5\u671f \u2192</div>';
+  if(todayIndex >= 0){
+    html += `<button type="button" class="todayfab${todayIndex===activeIndex?' is-hidden':''}" id="todayFab" onclick="goToPage(${todayIndex}, true)">\u4eca\u5929</button>`;
+  }
   el.innerHTML = html;
 
   pagerEl = document.getElementById('pager');
@@ -706,11 +838,28 @@ function buildList(){
    and is identical whether you swiped left, swiped right, or tapped a chip.
    This is what removes the old "off by one day" problem entirely. */
 let pagerTicking = false;
+// When a date chip (or any goToPage(..., true) call) triggers a smooth
+// scroll across several pages, the native scroll event fires continuously
+// while it's still in transit, and rounding scrollLeft/pageWidth briefly
+// matches every page it passes over — flashing each one active/inactive
+// along the way. scrollTargetIndex records where a programmatic scroll is
+// headed so onPagerScroll can ignore those in-between positions and only
+// resume live updates once the animation actually reaches its target (or
+// immediately, for ordinary finger swiping, where this stays null).
+let scrollTargetIndex = null;
 function onPagerScroll(){
   if(pagerTicking) return;
   pagerTicking = true;
   requestAnimationFrame(()=>{
     const w = pagerEl.clientWidth || 1;
+    if(scrollTargetIndex !== null){
+      if(Math.abs(pagerEl.scrollLeft - scrollTargetIndex*w) < 2){
+        scrollTargetIndex = null;
+      } else {
+        pagerTicking = false;
+        return;
+      }
+    }
     setActiveIndex(Math.round(pagerEl.scrollLeft / w));
     pagerTicking = false;
   });
@@ -730,15 +879,26 @@ function setActiveIndex(i){
   }
 
   const prevPage = document.querySelector('.daypage.active');
-  if(prevPage) prevPage.classList.remove('active');
+  if(prevPage){
+    prevPage.classList.remove('active');
+    // Scroll the page you just left back to the top, but only once it's fully
+    // off-screen — resetting it immediately would be visible mid-swipe.
+    setTimeout(()=>{
+      if(!prevPage.classList.contains('active')) prevPage.scrollTop = 0;
+    }, 450);
+  }
   const page = document.getElementById('page-'+i);
   if(page) page.classList.add('active');
+
+  const fab = document.getElementById('todayFab');
+  if(fab) fab.classList.toggle('is-hidden', i===todayIndex);
 }
 
 function goToPage(i, smooth){
   if(!pagerEl) return;
   i = Math.max(0, Math.min(trip.length-1, i));
   const w = pagerEl.clientWidth || 1;
+  scrollTargetIndex = smooth ? i : null;
   pagerEl.scrollTo({ left: i*w, behavior: smooth ? 'smooth' : 'auto' });
   setActiveIndex(i);
 }
@@ -747,7 +907,17 @@ function goToDayFromMap(anchor){
   if(leafletMap) leafletMap.closePopup();
   const idx = dayAnchors.indexOf(anchor);
   showView('list');
-  setTimeout(()=>{ goToPage(idx<0?0:idx, false); }, 230);
+  setTimeout(()=>{ goToPage(idx<0?0:idx, false); }, 320);
+}
+
+function goToMapFromDay(city){
+  if(!city || !cityMarkers[city] || !leafletMap) return;
+  showView('map');
+  setTimeout(()=>{
+    const m = cityMarkers[city];
+    leafletMap.setView(m.getLatLng(), Math.max(leafletMap.getZoom(), baseZoom+1), { animate:true });
+    m.openPopup();
+  }, 320);
 }
 
 function setHeaderHeightVar(){
@@ -784,9 +954,31 @@ function showView(name){
 
     setHeaderHeightVar();
     if(name==='map' && leafletMap){ setTimeout(()=>leafletMap.invalidateSize(), 80); }
-    if(name==='list'){ setTimeout(()=>goToPage(activeIndex, false), 40); }
-  }, 180);
+    if(name==='list'){
+      setTimeout(()=>{
+        // The very first time the day-list tab is opened, land on today's
+        // card automatically. After that (or once the person has swiped or
+        // tapped a different day), just keep showing whatever day they were
+        // last on — their own choice is never overridden again.
+        if(pendingTodayIndex !== null){
+          goToPage(pendingTodayIndex, false);
+          pendingTodayIndex = null;
+        } else {
+          goToPage(activeIndex, false);
+        }
+      }, 40);
+    }
+  }, 300);
 }
+
+// If today falls within the trip dates, remember which day that is so the
+// day-list tab can open on it the first time — computed once at load, not
+// tied to the map tab shown by default. todayIndex also drives the floating
+// "今天" button, so it's available any time the person wants to jump back.
+let pendingTodayIndex = null;
+const todayEntry = trip.find(isTodayEntry);
+const todayIndex = todayEntry ? trip.indexOf(todayEntry) : -1;
+if(todayIndex >= 0) pendingTodayIndex = todayIndex;
 
 buildDateBar();
 buildList();
@@ -797,15 +989,6 @@ if(document.fonts && document.fonts.ready){ document.fonts.ready.then(setHeaderH
 
 // map tab is shown by default on load
 document.getElementById('mapView').classList.add('visible');
-
-const todayEntry = trip.find(isTodayEntry);
-if(todayEntry){
-  const idx = trip.indexOf(todayEntry);
-  setTimeout(()=>{
-    showView('list');
-    setTimeout(()=>goToPage(idx, false), 230);
-  }, 200);
-}
 </script>
 </body>
 </html>
