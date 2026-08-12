@@ -104,14 +104,31 @@
 
   /* Soft fade at the very bottom of the screen, hinting that content (the
      rest of a day card, the map caption, the flight tips) continues below
-     the visible viewport — shown across all three tabs. Stays translucent
-     all the way through (never reaches a solid color) so it never reads as
-     a colored block sitting on top of a card — just a gentle dimming. Fades
-     away once a day card is actually scrolled to its end, since there's
-     nothing left below to hint at. */
+     the visible viewport — shown across all three tabs. Uses an eased
+     multi-stop curve (not a straight linear ramp) so the fade feels like a
+     natural, gradual dimming rather than a hard-edged bar — closer to how a
+     browser's own translucent toolbar blends into a page. Stays translucent
+     all the way through (never a solid color), and fades away entirely once
+     a day card is actually scrolled to its end. */
   .bottomfade{
-    position:fixed; left:0; right:0; bottom:0; height:34px;
-    background:linear-gradient(to bottom, rgba(238,241,236,0), rgba(238,241,236,.5));
+    position:fixed; left:0; right:0; bottom:0; height:64px;
+    background:linear-gradient(to bottom,
+      rgba(238,241,236,0) 0%,
+      rgba(238,241,236,.008) 8.1%,
+      rgba(238,241,236,.032) 15.5%,
+      rgba(238,241,236,.068) 22.5%,
+      rgba(238,241,236,.114) 29%,
+      rgba(238,241,236,.168) 35.3%,
+      rgba(238,241,236,.229) 41.2%,
+      rgba(238,241,236,.293) 47.1%,
+      rgba(238,241,236,.358) 52.9%,
+      rgba(238,241,236,.421) 58.8%,
+      rgba(238,241,236,.482) 64.7%,
+      rgba(238,241,236,.536) 71%,
+      rgba(238,241,236,.582) 77.5%,
+      rgba(238,241,236,.618) 84.5%,
+      rgba(238,241,236,.642) 91.9%,
+      rgba(238,241,236,.65) 100%);
     pointer-events:none; z-index:2400;
     opacity:1; transition:opacity .3s ease;
   }
@@ -205,11 +222,18 @@
   .daycard__title{ font-size:20px; font-weight:900; color:var(--navy); margin-bottom:14px; line-height:1.4; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
   .badge-daytrip{ display:inline-block; font-size:12px; font-weight:700; color:var(--amber-deep); background:#FCEFD9; padding:2px 9px; border-radius:999px; }
   .daycard ul.highlights{ list-style:none; margin:0 0 4px; padding:0; }
+  .foodsection{ margin-top:12px; padding-top:12px; border-top:1px dashed var(--line); }
+  .foodsection__label{ font-size:12.5px; font-weight:800; color:var(--navy-3); margin-bottom:6px; letter-spacing:.5px; }
+  .foodsection ul.foodlist{ list-style:none; margin:0; padding:0; }
+  .foodsection ul.foodlist li{ position:relative; padding-left:20px; margin-bottom:9px; line-height:1.6; color:#2A3442; }
+  .foodsection ul.foodlist li::before{ content:"•"; position:absolute; left:2px; color:var(--amber-deep); font-weight:900; }
   .daycard ul.highlights li{ position:relative; padding-left:20px; margin-bottom:9px; line-height:1.6; color:#2A3442; }
   .daycard ul.highlights li::before{ content:"•"; position:absolute; left:2px; color:var(--amber-deep); font-weight:900; }
   .daycard__row{ display:flex; align-items:flex-start; gap:8px; font-size:14.5px; line-height:1.65; color:var(--ink-soft); margin-top:12px; padding-top:12px; border-top:1px dashed var(--line); }
   .daycard__row .icon{flex:0 0 auto; font-size:16px;}
   .daycard__row.stay{color:var(--navy-3); font-weight:700;}
+  .stay-address{ display:inline-block; margin-top:3px; font-weight:500; font-size:13px; color:var(--ink-soft); }
+  .stay-phone{ font-weight:700; font-size:13px; color:#1A56DB; text-decoration:none; white-space:nowrap; }
   .daycard__links{ display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; padding-top:12px; border-top:1px dashed var(--line); }
   .daycard__links a{ display:inline-block; background:#F1F5FB; border:1px solid #D6E2F2; border-radius:999px; padding:6px 12px; font-size:13px; font-weight:700; color:#1A56DB; text-decoration:none; touch-action:manipulation; transition:background-color .25s ease; }
   .daycard__links a:active{ background:#DCE8F8; }
@@ -323,7 +347,8 @@
 <script>
 const trip = [
   {date:"8/30", weekday:"日", title:"法蘭克福抵達", flags:["🇩🇪"],
-   highlights:["調整時差，輕鬆玩","羅馬廣場","法蘭克福主教座堂","歌德之家","施泰德美術館","Bären-Treff 小熊軟糖"],
+   highlights:["調整時差，輕鬆玩","羅馬廣場","法蘭克福主教座堂","歌德之家","施泰德美術館"],
+   food:["選購 Bären-Treff 小熊軟糖"],
    transport:"✈️ 台北 → 法蘭克福",
    note:"8/29 22:50 起飛 → 8/30 06:50 抵達",
    stay:"法蘭克福", isBase:true, mapCity:"法蘭克福"},
@@ -334,7 +359,8 @@ const trip = [
    stay:"法蘭克福", isBase:false, mapCity:"科隆"},
 
   {date:"9/1", weekday:"二", title:"羅騰堡＋烏茲堡", flags:["🇩🇪"], isDaytrip:true,
-   highlights:["羅騰堡老城城牆","品嚐羅騰堡雪球 Schneeball","時間充裕可續訪烏茲堡宮殿、馬利恩堡要塞"],
+   highlights:["羅騰堡老城城牆","時間充裕可續訪烏茲堡宮殿、馬利恩堡要塞"],
+   food:["品嚐羅騰堡雪球 Schneeball"],
    viaCity:"烏茲堡",
    viaTransport:"🚄 ICE 約1小時10分（法蘭克福→烏茲堡）",
    transport:"🚆 區域車 約1小時（烏茲堡→羅騰堡，RE80 轉 RB82）",
@@ -344,7 +370,8 @@ const trip = [
    stay:"法蘭克福", isBase:false, mapCity:"羅騰堡"},
 
   {date:"9/2", weekday:"三", title:"呂德斯海姆", flags:["🇩🇪"], isDaytrip:true,
-   highlights:["斑鳩小巷","葡萄園纜車上山來回","品嚐呂德斯海姆咖啡 Rüdesheimer Kaffee","下午搭萊茵河遊船"],
+   highlights:["斑鳩小巷","葡萄園纜車上山來回","下午搭萊茵河遊船"],
+   food:["品嚐呂德斯海姆咖啡 Rüdesheimer Kaffee"],
    transport:"🚆 區域車 約1小時", note:null,
    links:[{label:"呂德斯海姆＋萊茵河遊船", url:"https://www.leo-travel.idv.tw/15045/germany-rudesheim-rhein-ferry-koblenz-day-tour"}],
    stay:"法蘭克福", isBase:false, mapCity:"呂德斯海姆"},
@@ -355,14 +382,16 @@ const trip = [
    stay:"卡爾斯魯爾", isBase:true, mapCity:"卡爾斯魯爾", alsoAt:"法蘭克福"},
 
   {date:"9/4", weekday:"五", title:"海德堡", flags:["🇩🇪"], isDaytrip:true,
-   highlights:["穀物市場","海德堡纜車","海德堡城堡","王座山","海德堡大學、Zeughaus 學生食堂、學生監獄","舊橋","蛇徑、哲學家小徑","老城區","Bären-Treff 小熊軟糖"],
+   highlights:["穀物市場","海德堡纜車","海德堡城堡","王座山","海德堡大學、學生監獄","舊橋","蛇徑、哲學家小徑","老城區"],
+   food:["Zeughaus 學生餐廳，體驗道地學生食堂氛圍","選購 Bären-Treff 小熊軟糖"],
    transport:"🚆 區域車 約40分鐘",
    note:"遊客中心可購買海德堡卡，含纜車與城堡參觀。",
    links:[{label:"海德堡攻略", url:"https://www.bring-you.info/zh-tw/heidelberg"}],
    stay:"卡爾斯魯爾", isBase:false, mapCity:"海德堡"},
 
   {date:"9/5", weekday:"六", title:"史特拉斯堡", flags:["🇫🇷"], isDaytrip:true,
-   highlights:["史特拉斯堡車站","小法國區與運河沿岸","克勒貝爾廣場","卡梅澤爾府邸吃傳統菜","史特拉斯堡主教座堂","阿爾薩斯奶油圓蛋糕 Kugelhopf"],
+   highlights:["史特拉斯堡車站","小法國區與運河沿岸","克勒貝爾廣場","史特拉斯堡主教座堂"],
+   food:["卡梅澤爾府邸品嚐阿爾薩斯傳統料理","品嚐阿爾薩斯奶油圓蛋糕 Kugelhopf"],
    transport:"🚆 跨國 ICE 約45分鐘",
    note:"也可搭區間車或巴士。出德國後月票不適用，需另外付費。",
    links:[{label:"史特拉斯堡攻略", url:"https://www.leo-travel.idv.tw/72370/france-strasbourg-travel-guide"}],
@@ -381,12 +410,14 @@ const trip = [
    stay:"卡爾斯魯爾", isBase:false, mapCity:"科爾馬"},
 
   {date:"9/7", weekday:"一", title:"卡爾斯魯爾 → 慕尼黑", flags:["🇩🇪"],
-   highlights:["慕尼黑王宮","瑪利亞廣場","HB 啤酒屋","維克圖阿連市場"],
+   highlights:["慕尼黑王宮","瑪利亞廣場"],
+   food:["HB 啤酒屋暢飲道地啤酒","維克圖阿連市場逛市集、嚐小吃"],
    transport:"🚄 ICE 約3小時", note:"早上出發前往慕尼黑",
    stay:"慕尼黑", isBase:true, mapCity:"慕尼黑", alsoAt:"卡爾斯魯爾"},
 
   {date:"9/8", weekday:"二", title:"慕尼黑 → 薩爾斯堡 → 國王湖", flags:["🇩🇪","🇦🇹"],
-   highlights:["搭乘電動船","聖巴托羅繆教堂吃魚","搭船到上湖","Jenner 纜車上山（視時間決定）"],
+   highlights:["搭乘電動船","搭船到上湖","Jenner 纜車上山（視時間決定）"],
+   food:["聖巴托羅繆教堂旁餐廳，品嚐煎烤魚料理"],
    viaCity:"薩爾斯堡", viaDashed:true,
    viaTransport:"🚄 火車 約1小時30分（慕尼黑→薩爾斯堡）",
    transport:"🚌 巴士 840＋841 約1小時（薩爾斯堡→國王湖）",
@@ -394,7 +425,8 @@ const trip = [
    stay:"薩爾斯堡", isBase:true, mapCity:"國王湖", alsoAt:"薩爾斯堡", sameDayReturn:true},
 
   {date:"9/9", weekday:"三", title:"薩爾斯堡 → 慕尼黑", flags:["🇦🇹","🇩🇪"],
-   highlights:["搭纜車上薩爾斯堡要塞","薩爾斯堡主教座堂","莫札特故居","米拉貝爾宮與花園","品嚐莫札特巧克力"],
+   highlights:["搭纜車上薩爾斯堡要塞","薩爾斯堡主教座堂","莫札特故居","米拉貝爾宮與花園"],
+   food:["品嚐莫札特巧克力"],
    transport:"🚄 火車 約1小時40分", note:"上午逛薩爾斯堡，傍晚返回慕尼黑", dashedLeg:true,
    stay:"慕尼黑", isBase:true, mapCity:"薩爾斯堡"},
 
@@ -432,7 +464,8 @@ const trip = [
    stay:"布拉格", isBase:false, mapCity:"布拉格"},
 
   {date:"9/16", weekday:"三", title:"布拉格", flags:["🇨🇿"],
-   highlights:["舊城區（老城廣場、火藥塔）","中午吃傳統菜","國家博物館或高堡區"],
+   highlights:["舊城區（老城廣場、火藥塔）","國家博物館或高堡區"],
+   food:["中午品嚐捷克傳統料理"],
    transport:null, note:null,
    stay:"布拉格", isBase:false, mapCity:"布拉格"},
 
@@ -568,7 +601,58 @@ const cityNames = {
   "布拉格":{local:"Praha", en:"Prague", tag:"捷"},
 };
 
+// Accommodation for each leg of the trip. Matched to a day card by city name
+// plus the day falling within [checkin, checkout) — the checkout date itself
+// isn't "stayed" (that's the day of departure to the next place). Note: W's
+// own ZKM residency Airbnb in Karlsruhe (Kaiserpassage 10, 8/14–9/7) isn't
+// listed here since it predates the family days tracked in `trip` and is
+// superseded, for the overlapping 9/3–9/7 window, by the family's separate
+// Karlsruhe booking below.
+const stays = [
+  {city:"法蘭克福", checkin:"8/30", checkout:"9/3",
+   address:"Hamburger Allee 4, 60486 Frankfurt am Main-Innenstadt II, 德國",
+   phone:"+49 69 4089980",
+   bookingUrl:"https://www.booking.com/Share-2qIsbkB",
+   mapUrl:"https://maps.app.goo.gl/2sVSLrsAMAS7JHzd9"},
+  {city:"卡爾斯魯爾", checkin:"9/3", checkout:"9/7",
+   address:"Karlstraße 42, 76133 Karlsruhe-Innenstadt-West, 德國",
+   phone:null,
+   bookingUrl:null,
+   mapUrl:"https://maps.app.goo.gl/gxu6DxFuet9VvB2r6"},
+  {city:"慕尼黑", checkin:"9/7", checkout:"9/8",
+   address:"Bayerstraße 89, 80335 München-Ludwigsvorstadt-Isarvorstadt, 德國",
+   phone:null,
+   bookingUrl:"https://www.booking.com/Share-3hvW61u",
+   mapUrl:"https://maps.app.goo.gl/MSMRnNk99gRoMnAW6"},
+  {city:"薩爾斯堡", checkin:"9/8", checkout:"9/9",
+   address:"Saint-Julien-Straße 33, Salzburg, Salzburg 5020",
+   phone:null,
+   bookingUrl:"https://www.airbnb.com.tw/rooms/1355268276163966253?guests=1&adults=1&s=67&unique_share_id=86f5b2f6-57db-44be-8d30-29e88a1d97f2",
+   mapUrl:"https://maps.app.goo.gl/KS9TqTHhfdJARbPm6"},
+  {city:"慕尼黑", checkin:"9/9", checkout:"9/10",
+   address:"Bayerstraße 89, 80335 München-Ludwigsvorstadt-Isarvorstadt, 德國",
+   phone:null,
+   bookingUrl:"https://www.booking.com/Share-3hvW61u",
+   mapUrl:"https://maps.app.goo.gl/MSMRnNk99gRoMnAW6"},
+  {city:"柏林", checkin:"9/10", checkout:"9/14",
+   address:"Oranienburger Str. 11, 10178 Berlin, 德國",
+   phone:null,
+   bookingUrl:"https://www.booking.com/Share-Aq5QT4",
+   mapUrl:"https://maps.app.goo.gl/em52CBRBxm8HQERo6"},
+  {city:"布拉格", checkin:"9/14", checkout:"9/18",
+   address:"8 Senovážné náměstí, 布拉格, 110 00, 捷克共和國",
+   phone:null,
+   bookingUrl:"https://www.booking.com/Share-K34Re2",
+   mapUrl:"https://maps.app.goo.gl/TRbr7J1iV9UF9uJb9"},
+];
+function mmddNum(s){ const [mo,da] = s.split("/").map(Number); return mo*100+da; }
+function findStay(city, dateStr){
+  const key = mmddNum(dateStr);
+  return stays.find(s=> s.city===city && key>=mmddNum(s.checkin) && key<mmddNum(s.checkout)) || null;
+}
+
 function cityNameHTML(city){
+
   const n = cityNames[city];
   if(!n) return '';
   const txt = (n.local === n.en) ? n.local : `${n.local}（${n.tag}）／${n.en}（英）`;
@@ -839,10 +923,27 @@ function buildList(){
     if(t.highlights && t.highlights.length){
       html += `<ul class="highlights">` + t.highlights.map(h=>`<li>${h}</li>`).join('') + `</ul>`;
     }
+    if(t.food && t.food.length){
+      html += `<div class="foodsection">
+        <div class="foodsection__label">\ud83c\udf7d\ufe0f \u7f8e\u98df</div>
+        <ul class="foodlist">` + t.food.map(f=>`<li>${f}</li>`).join('') + `</ul>
+      </div>`;
+    }
     if(t.viaTransport){ html += `<div class="daycard__row"><span>${t.viaTransport}</span></div>`; }
     if(t.transport){ html += `<div class="daycard__row"><span>${t.transport}</span></div>`; }
     if(t.note){ html += `<div class="daycard__row"><span class="icon">\ud83d\udcdd</span><span>${t.note}</span></div>`; }
-    html += `<div class="daycard__row stay"><span class="icon">\ud83c\udfe8</span><span>\u4f4f\u5bbf\uff1a${t.stay}</span></div>`;
+    const stayInfo = findStay(t.stay, t.date);
+    html += `<div class="daycard__row stay"><span class="icon">\ud83c\udfe8</span><span>\u4f4f\u5bbf\uff1a${t.stay}` +
+      (stayInfo ? `<br><span class="stay-address">${stayInfo.address}</span>` +
+        (stayInfo.phone ? ` <a class="stay-phone" href="tel:${stayInfo.phone.replace(/\s+/g,'')}">${stayInfo.phone}</a>` : '')
+        : '') +
+      `</span></div>`;
+    if(stayInfo && (stayInfo.mapUrl || stayInfo.bookingUrl)){
+      html += `<div class="daycard__links">` +
+        (stayInfo.mapUrl ? `<a href="${stayInfo.mapUrl}" target="_blank" rel="noopener">\ud83d\uddfa\ufe0f Google \u5730\u5716</a>` : '') +
+        (stayInfo.bookingUrl ? `<a href="${stayInfo.bookingUrl}" target="_blank" rel="noopener">\ud83d\udd17 \u8a02\u623f\u9801\u9762</a>` : '') +
+        `</div>`;
+    }
     if(t.links && t.links.length){
       html += `<div class="daycard__links">` +
         t.links.map(l=>`<a href="${l.url}" target="_blank" rel="noopener">\ud83d\udd17 ${l.label}</a>`).join('') +
