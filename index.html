@@ -45,7 +45,7 @@
   .appbar__route{ margin-top:2px; font-size:13.5px; color:#8EA3C4; }
 
   .tabs{ display:flex; gap:0; background:var(--navy-2); padding:8px 10px; }
-  .tab{ flex:1; border:none; background:transparent; color:#C9D3E2; font-family:inherit; font-weight:700; font-size:14.5px; padding:12px 4px; border-radius:12px; display:flex; align-items:center; justify-content:center; gap:5px; min-height:48px; white-space:nowrap; transition:background-color .3s ease, color .3s ease; }
+  .tab{ flex:1; border:none; background:transparent; color:#C9D3E2; font-family:inherit; font-weight:700; font-size:12.5px; padding:11px 2px; border-radius:12px; display:flex; align-items:center; justify-content:center; gap:4px; min-height:46px; white-space:nowrap; transition:background-color .3s ease, color .3s ease; }
   .tab.active{ background:var(--amber); color:var(--navy); }
 
   .datebar{ display:flex; gap:8px; overflow-x:auto; background:var(--navy-3); padding:10px 12px; -webkit-overflow-scrolling:touch; touch-action:pan-x; }
@@ -182,6 +182,22 @@
   .flightcard__route span{ color:var(--amber-deep); margin:0 4px; }
   .flightcard__code{ font-size:14px; color:var(--ink-soft); font-weight:700; margin-top:3px; }
 
+  .emgpage{ padding:0 16px; }
+  .emgintro{ font-size:12.5px; color:var(--ink-soft); background:#F1F3F5; border-radius:12px; padding:10px 14px; margin-bottom:14px; line-height:1.6; }
+  .emgcard{ background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px 16px 14px; margin-bottom:14px; box-shadow:0 2px 6px rgba(22,35,58,.08); }
+  .emgcard__tag{ display:inline-block; font-size:12.5px; font-weight:900; color:#fff; background:var(--navy-3); padding:3px 11px; border-radius:999px; margin-bottom:9px; }
+  .emgcard__name{ font-size:16.5px; font-weight:900; color:var(--navy); line-height:1.35; }
+  .emgcard__addr{ font-size:13px; color:var(--ink-soft); margin-top:3px; }
+  .emgcard__row{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:10px; padding-top:10px; border-top:1px dashed var(--line); }
+  .emgcard__label{ font-size:13px; font-weight:700; color:var(--navy-3); }
+  .emgcard__phone{ font-size:15px; font-weight:800; color:#1A56DB; text-decoration:none; font-family:ui-monospace,'SF Mono','Menlo',monospace; }
+  .emgcard__note{ font-size:12.5px; color:var(--ink-soft); line-height:1.6; margin-top:10px; }
+  .emgtip{ background:var(--card); border:1px dashed var(--line); border-radius:14px; padding:14px 16px; font-size:13.5px; color:var(--ink-soft); margin-top:4px; }
+  .emgtip b{ color:var(--navy); display:block; margin-bottom:6px; font-size:14.5px; }
+  .emgtip ul{ margin:0; padding-left:20px; }
+  .emgtip li{ margin:5px 0; line-height:1.6; }
+  .emgtip a{ color:#1A56DB; text-decoration:none; font-weight:700; }
+
   .flighttime{ display:flex; align-items:center; gap:8px; margin:14px 0 4px; padding:12px 0; border-top:1px dashed var(--line); border-bottom:1px dashed var(--line); }
   .flighttime__col{ flex:1; min-width:0; }
   .flighttime__col:last-child{ text-align:right; }
@@ -259,6 +275,7 @@
     <button class="tab active" id="tabMapBtn" onclick="showView('map')">🗺️ 路線地圖</button>
     <button class="tab" id="tabListBtn" onclick="showView('list')">📋 每日行程</button>
     <button class="tab" id="tabFlightBtn" onclick="showView('flight')">✈️ 航班</button>
+    <button class="tab" id="tabEmergencyBtn" onclick="showView('emergency')">🆘 緊急聯絡</button>
   </div>
   <div class="datebar hidden" id="dateBar"></div>
 </div>
@@ -339,6 +356,83 @@
         </ul>
       </div>
 
+    </div>
+  </section>
+
+  <section id="emergencyView">
+    <div class="emgpage">
+      <div class="emgintro">
+        資料來源：中華民國外交部領事事務局（roc-taiwan.org / mofa.gov.tw），僅供參考，實際狀況請以外交部公告為準。
+      </div>
+
+      <div class="emgcard">
+        <div class="emgcard__tag">柏林｜駐德國代表處</div>
+        <div class="emgcard__name">駐德國台北代表處</div>
+        <div class="emgcard__addr">Markgrafenstrasse 35, 10117 Berlin, Germany</div>
+        <div class="emgcard__row"><span class="emgcard__label">急難救助電話</span><a class="emgcard__phone" href="tel:+491713898257">+49 171 3898257</a></div>
+        <div class="emgcard__row"><span class="emgcard__label">辦公室電話</span><a class="emgcard__phone" href="tel:+4930203610">+49 30 203610</a></div>
+        <div class="emgcard__note">急難救助電話僅供車禍、搶劫、生命安危等緊急事件使用，非急難重大事件請於上班時間撥打辦公室電話。服務時間：週一至週五 09:00–12:30、14:00–17:00。轄區含柏林，涵蓋 9/10–9/14 柏林行程。</div>
+        <div class="daycard__links stay-links">
+          <a href="https://www.google.com/maps/search/?api=1&query=Markgrafenstrasse%2035%2C%2010117%20Berlin" target="_blank" rel="noopener">🗺️ 代表處地圖</a>
+        </div>
+      </div>
+
+      <div class="emgcard">
+        <div class="emgcard__tag">法蘭克福｜駐法蘭克福辦事處</div>
+        <div class="emgcard__name">駐德國台北代表處法蘭克福辦事處</div>
+        <div class="emgcard__addr">Bleichstraße 52, 60313 Frankfurt am Main, Germany</div>
+        <div class="emgcard__row"><span class="emgcard__label">急難救助電話</span><a class="emgcard__phone" href="tel:+4915111056641">+49 151 1105 6641</a></div>
+        <div class="emgcard__row"><span class="emgcard__label">辦公室電話</span><a class="emgcard__phone" href="tel:+4969745734">+49 69 745734</a></div>
+        <div class="emgcard__note">領務收件時間：週一至週五 09:00–12:30；電話諮詢：14:30–16:30。轄區含黑森邦，涵蓋 8/30–9/2 法蘭克福行程。</div>
+        <div class="daycard__links stay-links">
+          <a href="https://www.google.com/maps/search/?api=1&query=Bleichstra%C3%9Fe%2052%2C%2060313%20Frankfurt%20am%20Main" target="_blank" rel="noopener">🗺️ 辦事處地圖</a>
+        </div>
+      </div>
+
+      <div class="emgcard">
+        <div class="emgcard__tag">慕尼黑｜駐慕尼黑辦事處</div>
+        <div class="emgcard__name">駐德國台北代表處慕尼黑辦事處</div>
+        <div class="emgcard__addr">Leopoldstraße 28a/V, 80802 München, Germany</div>
+        <div class="emgcard__row"><span class="emgcard__label">急難救助電話</span><a class="emgcard__phone" href="tel:+491746326739">+49 174 6326739</a></div>
+        <div class="emgcard__row"><span class="emgcard__label">辦公室電話</span><a class="emgcard__phone" href="tel:+49895126790">+49 89 5126790</a></div>
+        <div class="emgcard__note">服務時間：週一至週五 09:00–12:30。轄區含巴伐利亞邦、巴登-符騰堡邦，涵蓋卡爾斯魯爾（9/3–9/6）與慕尼黑（9/7–9/10）行程。</div>
+        <div class="daycard__links stay-links">
+          <a href="https://www.google.com/maps/search/?api=1&query=Leopoldstra%C3%9Fe%2028a%2C%2080802%20M%C3%BCnchen" target="_blank" rel="noopener">🗺️ 辦事處地圖</a>
+        </div>
+      </div>
+
+      <div class="emgcard">
+        <div class="emgcard__tag">維也納｜駐奧地利代表處</div>
+        <div class="emgcard__name">駐奧地利台北經濟文化代表處</div>
+        <div class="emgcard__addr">Wagramer Str. 19/11. OG, A-1220 Vienna, Austria</div>
+        <div class="emgcard__row"><span class="emgcard__label">急難救助電話</span><a class="emgcard__phone" href="tel:+436643450455">+43 664 345 0455</a></div>
+        <div class="emgcard__row"><span class="emgcard__label">辦公室電話</span><a class="emgcard__phone" href="tel:+4312124720">+43 1 2124720</a></div>
+        <div class="emgcard__note">領務受理時間：週一至週五 09:00–12:00；辦公時間 09:00–17:00。轄區為奧地利全境，涵蓋 9/8–9/9 薩爾斯堡、國王湖行程。</div>
+        <div class="daycard__links stay-links">
+          <a href="https://www.google.com/maps/search/?api=1&query=Wagramer%20Str.%2019%2C%20A-1220%20Vienna" target="_blank" rel="noopener">🗺️ 代表處地圖</a>
+        </div>
+      </div>
+
+      <div class="emgcard">
+        <div class="emgcard__tag">布拉格｜駐捷克代表處</div>
+        <div class="emgcard__name">駐捷克台北經濟文化辦事處</div>
+        <div class="emgcard__addr">Evropska 2590/33c, 160 00 Praha 6, Czech Republic</div>
+        <div class="emgcard__row"><span class="emgcard__label">急難救助電話</span><a class="emgcard__phone" href="tel:+420603166707">+420 603 166 707</a></div>
+        <div class="emgcard__row"><span class="emgcard__label">辦公室電話</span><a class="emgcard__phone" href="tel:+420233320606">+420 233 320 606</a></div>
+        <div class="emgcard__note">領務受理時間：週一至週五 09:30–11:30、13:30–16:30。轄區為捷克全境，涵蓋 9/14–9/18 布拉格行程。</div>
+        <div class="daycard__links stay-links">
+          <a href="https://www.google.com/maps/search/?api=1&query=Evropska%202590%2F33c%2C%20160%2000%20Praha%206" target="_blank" rel="noopener">🗺️ 辦事處地圖</a>
+        </div>
+      </div>
+
+      <div class="emgtip">
+        <b>提醒</b>
+        <ul>
+          <li>急難救助電話僅供緊急求助之用（車禍、搶劫、傷病、被捕等攸關生命安危的情況），非急難事件請勿撥打；一般護照、簽證等事務請於上班時間撥打辦公室電話。</li>
+          <li>以上皆為中華民國（台灣）駐外代表處／辦事處資料，資料來源為外交部領事事務局（roc-taiwan.org / mofa.gov.tw）。</li>
+          <li>德國、奧地利、捷克的報案／救護／消防統一號碼皆為 <a href="tel:112">112</a>（全歐盟通用緊急電話，免付費）。</li>
+        </ul>
+      </div>
     </div>
   </section>
 </main>
@@ -1085,13 +1179,14 @@ window.addEventListener('resize', ()=>{
   if(pagerEl) goToPage(activeIndex, false); // keep the same day aligned after rotate/resize
 });
 
-const VIEWS = { map:'mapView', list:'listView', flight:'flightView' };
+const VIEWS = { map:'mapView', list:'listView', flight:'flightView', emergency:'emergencyView' };
 
 function showView(name){
   const targetId = VIEWS[name];
   document.getElementById('tabMapBtn').classList.toggle('active', name==='map');
   document.getElementById('tabListBtn').classList.toggle('active', name==='list');
   document.getElementById('tabFlightBtn').classList.toggle('active', name==='flight');
+  document.getElementById('tabEmergencyBtn').classList.toggle('active', name==='emergency');
   document.getElementById('dateBar').classList.toggle('hidden', name!=='list');
   window.scrollTo({top:0, behavior:'instant'});
 
