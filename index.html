@@ -232,8 +232,8 @@
   .daycard__row{ display:flex; align-items:flex-start; gap:8px; font-size:14.5px; line-height:1.65; color:var(--ink-soft); margin-top:12px; padding-top:12px; border-top:1px dashed var(--line); }
   .daycard__row .icon{flex:0 0 auto; font-size:16px;}
   .daycard__row.stay{color:var(--navy-3); font-weight:700;}
-  .stay-address{ display:inline-block; margin-top:3px; font-weight:500; font-size:13px; color:var(--ink-soft); }
-  .stay-phone{ font-weight:700; font-size:13px; color:#1A56DB; text-decoration:none; white-space:nowrap; }
+  .stay-name{ display:inline-block; margin-top:3px; font-weight:800; font-size:14px; color:var(--navy); }
+  .stay-address{ display:inline-block; margin-top:2px; font-weight:500; font-size:13px; color:var(--ink-soft); }
   .daycard__links{ display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; padding-top:12px; border-top:1px dashed var(--line); }
   .daycard__links a{ display:inline-block; background:#F1F5FB; border:1px solid #D6E2F2; border-radius:999px; padding:6px 12px; font-size:13px; font-weight:700; color:#1A56DB; text-decoration:none; touch-action:manipulation; transition:background-color .25s ease; }
   .daycard__links a:active{ background:#DCE8F8; }
@@ -353,9 +353,10 @@ const trip = [
    note:"8/29 22:50 起飛 → 8/30 06:50 抵達",
    stay:"法蘭克福", isBase:true, mapCity:"法蘭克福"},
 
-  {date:"8/31", weekday:"一", title:"科隆", flags:["🇩🇪"], isDaytrip:true,
-   highlights:["科隆大教堂","霍亨索倫橋","科隆三角大樓","巧克力博物館","香水博物館","萊茵河"],
+  {date:"8/31", weekday:"一", title:"科隆 or 伊茨泰因", flags:["🇩🇪"], isDaytrip:true,
+   highlights:["科隆大教堂","霍亨索倫橋","科隆三角大樓","巧克力博物館","香水博物館","萊茵河","或伊茨泰因（Idstein）：悠閒漫步的德國鄉村小鎮"],
    transport:"🚄 ICE 約1小時", note:null,
+   links:[{label:"科隆攻略", url:"https://www.bring-you.info/zh-tw/cologne-travel-guide"}],
    stay:"法蘭克福", isBase:false, mapCity:"科隆"},
 
   {date:"9/1", weekday:"二", title:"羅騰堡＋烏茲堡", flags:["🇩🇪"], isDaytrip:true,
@@ -410,9 +411,10 @@ const trip = [
    stay:"卡爾斯魯爾", isBase:false, mapCity:"科爾馬"},
 
   {date:"9/7", weekday:"一", title:"卡爾斯魯爾 → 慕尼黑", flags:["🇩🇪"],
-   highlights:["慕尼黑王宮","瑪利亞廣場"],
-   food:["HB 啤酒屋暢飲道地啤酒","維克圖阿連市場逛市集、嚐小吃"],
+   highlights:["慕尼黑王宮","英國花園","瑪利亞廣場","穀物市場","阿桑教堂","Lederwaren Hetzenecker 選購行李箱"],
+   food:["HB 啤酒屋或 Wirtshaus Zum Straubinger 品嚐道地德國菜","Dallmayr 選購高級食材"],
    transport:"🚄 ICE 約3小時", note:"早上出發前往慕尼黑",
+   links:[{label:"慕尼黑攻略", url:"https://www.leo-travel.idv.tw/4910/germany-munich-city-tour-guide"}],
    stay:"慕尼黑", isBase:true, mapCity:"慕尼黑", alsoAt:"卡爾斯魯爾"},
 
   {date:"9/8", weekday:"二", title:"慕尼黑 → 薩爾斯堡 → 國王湖", flags:["🇩🇪","🇦🇹"],
@@ -422,12 +424,17 @@ const trip = [
    viaTransport:"🚄 火車 約1小時30分（慕尼黑→薩爾斯堡）",
    transport:"🚌 巴士 840＋841 約1小時（薩爾斯堡→國王湖）",
    note:"巴士 840 從薩爾斯堡火車站發車到貝希特斯加登（約50分），再轉 841 到國王湖（約10–15分）。可向司機購買一日票（約 €11，只收現金）。德鐵月票不適用。回程末班車較早，需留意時間。當晚住薩爾斯堡。",
+   links:[
+     {label:"國王湖一日遊攻略", url:"https://www.leo-travel.idv.tw/26702/austria-berchtesgaden-konigssee-one-day-trip"},
+     {label:"國王湖上湖健行攻略", url:"https://www.leo-travel.idv.tw/9230/germany-berchtesgaden-konigssee-obersee-hiking"}
+   ],
    stay:"薩爾斯堡", isBase:true, mapCity:"國王湖", alsoAt:"薩爾斯堡", sameDayReturn:true},
 
   {date:"9/9", weekday:"三", title:"薩爾斯堡 → 慕尼黑", flags:["🇦🇹","🇩🇪"],
    highlights:["搭纜車上薩爾斯堡要塞","薩爾斯堡主教座堂","莫札特故居","米拉貝爾宮與花園"],
-   food:["品嚐莫札特巧克力"],
-   transport:"🚄 火車 約1小時40分", note:"上午逛薩爾斯堡，傍晚返回慕尼黑", dashedLeg:true,
+   food:["品嚐莫札特巧克力（Original Fürst）"],
+   transport:"🚄 火車 約1小時40分", note:"上午逛薩爾斯堡，傍晚返回慕尼黑，可先預習電影《真善美》", dashedLeg:true,
+   links:[{label:"薩爾斯堡攻略", url:"https://www.leo-travel.idv.tw/17498/austria-salzburg-guide"}],
    stay:"慕尼黑", isBase:true, mapCity:"薩爾斯堡"},
 
   {date:"9/10", weekday:"四", title:"慕尼黑 → 柏林", flags:["🇩🇪"],
@@ -449,7 +456,7 @@ const trip = [
   {date:"9/13", weekday:"日", title:"柏林", flags:["🇩🇪"],
    highlights:["柏林愛樂音樂會（依官網場次）","或博物館島、東邊畫廊","百貨公司"],
    transport:null, note:null,
-   links:[{label:"柏林愛樂節目表", url:"https://www.berliner-philharmoniker.de/en/concerts/calendar/"}],
+   links:[{label:"柏林愛樂節目表", url:"https://www.berliner-philharmoniker.de/en/concerts/calendar/#/?start=2026-09-10"}],
    stay:"柏林", isBase:false, mapCity:"柏林"},
 
   {date:"9/14", weekday:"一", title:"柏林 → 布拉格", flags:["🇩🇪","🇨🇿"],
@@ -609,39 +616,32 @@ const cityNames = {
 // superseded, for the overlapping 9/3–9/7 window, by the family's separate
 // Karlsruhe booking below.
 const stays = [
-  {city:"法蘭克福", checkin:"8/30", checkout:"9/3",
+  {city:"法蘭克福", checkin:"8/30", checkout:"9/3", name:null,
    address:"Hamburger Allee 4, 60486 Frankfurt am Main-Innenstadt II, 德國",
-   phone:"+49 69 4089980",
    bookingUrl:"https://www.booking.com/Share-2qIsbkB",
    mapUrl:"https://maps.app.goo.gl/2sVSLrsAMAS7JHzd9"},
-  {city:"卡爾斯魯爾", checkin:"9/3", checkout:"9/7",
+  {city:"卡爾斯魯爾", checkin:"9/3", checkout:"9/7", name:null,
    address:"Karlstraße 42, 76133 Karlsruhe-Innenstadt-West, 德國",
-   phone:null,
    bookingUrl:null,
    mapUrl:"https://maps.app.goo.gl/gxu6DxFuet9VvB2r6"},
-  {city:"慕尼黑", checkin:"9/7", checkout:"9/8",
+  {city:"慕尼黑", checkin:"9/7", checkout:"9/8", name:null,
    address:"Bayerstraße 89, 80335 München-Ludwigsvorstadt-Isarvorstadt, 德國",
-   phone:null,
    bookingUrl:"https://www.booking.com/Share-3hvW61u",
    mapUrl:"https://maps.app.goo.gl/MSMRnNk99gRoMnAW6"},
-  {city:"薩爾斯堡", checkin:"9/8", checkout:"9/9",
+  {city:"薩爾斯堡", checkin:"9/8", checkout:"9/9", name:"studio Yana # 52",
    address:"Saint-Julien-Straße 33, Salzburg, Salzburg 5020",
-   phone:null,
    bookingUrl:"https://www.airbnb.com.tw/rooms/1355268276163966253?guests=1&adults=1&s=67&unique_share_id=86f5b2f6-57db-44be-8d30-29e88a1d97f2",
    mapUrl:"https://maps.app.goo.gl/KS9TqTHhfdJARbPm6"},
-  {city:"慕尼黑", checkin:"9/9", checkout:"9/10",
+  {city:"慕尼黑", checkin:"9/9", checkout:"9/10", name:null,
    address:"Bayerstraße 89, 80335 München-Ludwigsvorstadt-Isarvorstadt, 德國",
-   phone:null,
    bookingUrl:"https://www.booking.com/Share-3hvW61u",
    mapUrl:"https://maps.app.goo.gl/MSMRnNk99gRoMnAW6"},
-  {city:"柏林", checkin:"9/10", checkout:"9/14",
+  {city:"柏林", checkin:"9/10", checkout:"9/14", name:null,
    address:"Oranienburger Str. 11, 10178 Berlin, 德國",
-   phone:null,
    bookingUrl:"https://www.booking.com/Share-Aq5QT4",
    mapUrl:"https://maps.app.goo.gl/em52CBRBxm8HQERo6"},
-  {city:"布拉格", checkin:"9/14", checkout:"9/18",
+  {city:"布拉格", checkin:"9/14", checkout:"9/18", name:null,
    address:"8 Senovážné náměstí, 布拉格, 110 00, 捷克共和國",
-   phone:null,
    bookingUrl:"https://www.booking.com/Share-K34Re2",
    mapUrl:"https://maps.app.goo.gl/TRbr7J1iV9UF9uJb9"},
 ];
@@ -934,8 +934,8 @@ function buildList(){
     if(t.note){ html += `<div class="daycard__row"><span class="icon">\ud83d\udcdd</span><span>${t.note}</span></div>`; }
     const stayInfo = findStay(t.stay, t.date);
     html += `<div class="daycard__row stay"><span class="icon">\ud83c\udfe8</span><span>\u4f4f\u5bbf\uff1a${t.stay}` +
-      (stayInfo ? `<br><span class="stay-address">${stayInfo.address}</span>` +
-        (stayInfo.phone ? ` <a class="stay-phone" href="tel:${stayInfo.phone.replace(/\s+/g,'')}">${stayInfo.phone}</a>` : '')
+      (stayInfo ? (stayInfo.name ? `<br><span class="stay-name">${stayInfo.name}</span>` : '') +
+        `<br><span class="stay-address">${stayInfo.address}</span>`
         : '') +
       `</span></div>`;
     if(stayInfo && (stayInfo.mapUrl || stayInfo.bookingUrl)){
